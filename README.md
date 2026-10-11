@@ -8,8 +8,9 @@ Mobile-first Web Bluetooth controller for the PISKRAFT DRL ESP32 board.
 - Connect to `PISKRAFT_DIM` while the motorcycle is parked.
 - The page is a single scrollable view. DRL, turn-signal, and Welcome settings are grouped below the live preview.
 - Choose Thai or English from the language selector. The choice is saved in this browser.
-- Day, Night, and Rain lighting profiles start with editable values. Tap Preview to load a profile and simulate its DRL setting locally without sending a BLE command; use the mode buttons to see its turn signals or Welcome pattern. Save current settings to a profile to keep them in this browser. This does not write to the board.
+- Day, Night, and Rain lighting profiles start with editable values. Tap Preview to load a profile and send a temporary DRL preview if connected; without a board, the screen simulation still runs. Save current settings to a profile to keep them in this browser. This does not persist settings on the board.
 - The motorcycle diagram in the live preview animates left/right/hazard signals, DRL fade, and Welcome. The diagram and light bars also work without a Bluetooth connection. They show requested values, not measured light or board state.
+- Live Preview starts off. Enabling it requires a Bluetooth connection and makes mode and slider changes send temporary commands. Explicit Preview buttons send temporary commands even while the switch is off; disconnected previews only animate the screen and show a connection notice. Read from device also checks the connection first.
 
 ## BLE behavior
 
@@ -25,11 +26,13 @@ CFG,ANIM,<0 fade-in | 1 pulse | 2 flash>
 SAVE
 ```
 
-`fadeDurationMs` belongs to the APK's `drl` configuration, so the website places it in the DRL section. The APK includes turn brightness and DRL fade-start brightness in its configuration model, but its BLE save path does not send separate commands for those values. Turn brightness on this page is preview only.
+`fadeDurationMs` belongs to the APK's `drl` configuration, but the website places the control beside turn-signal settings to match the requested fade back to DRL after a signal ends. The screen simulation uses this duration, up to 5 seconds. The site sends `CFG,FADE,<ms>` on Save, but its physical effect after a turn signal ends remains unverified without the board. The APK includes turn brightness and DRL fade-start brightness in its configuration model, but its BLE save path does not send separate commands for those values. Turn brightness on this page is preview only.
 
 Welcome presets 1–3 use the APK's save commands. A successful BLE write only shows that the commands were sent. Confirm persistence by reading the board response and power cycling the board. The website does not claim that the firmware stored the selection without that test.
 
-The APK's custom Welcome curve is previewed by sending repeated `PREVIEW,CUSTOM,<brightness>` values. Its save path maps `custom` to animation value `0` and sends no keyframes. The web page therefore keeps an edited curve in browser storage for preview and blocks board Save while Custom is selected.
+Welcome previews now stream repeated `PREVIEW,DRL,<brightness>` commands. `PREVIEW,DRL,100` was previously verified on the board; the old `PREVIEW,ANIMATION,<brightness>` path did not light the user's motorcycle. The stream also drives the editable curve for 5–20 seconds and two extra patterns (Soft wave and Double flash). Physical behavior for the new sequences still needs testing with a board.
+
+The APK builds a `SET_CONFIG` object with a 5000 ms startup duration and keyframes, but its BLE `writeJson` method actually sends only `CFG,DRL`, `CFG,DIM`, `CFG,FADE`, `CFG,ANIM`, and `SAVE`. It drops the keyframes and custom duration. The site stores the graph and duration in browser storage and blocks board Save for Custom and the two extra patterns. Persisting these at startup requires firmware support; the 5–20 second graph works only while a connected browser is streaming its preview.
 
 The original `PREVIEW,DRL,100` command was tested on the board. Other modes, persistent save, and factory reset still require physical-device verification.
 

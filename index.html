@@ -26,7 +26,7 @@
           <div class="profile-card" data-profile="night"><div class="profile-heading"><strong data-i18n="profileNight">ขี่กลางคืน</strong><small id="nightProfileSummary"></small></div><div class="profile-actions"><button class="btn primary" data-profile-preview="night" data-i18n="previewProfile">▶ ทดลอง</button><button class="btn" data-profile-save="night" data-i18n="saveProfile">เก็บค่าปัจจุบัน</button></div></div>
           <div class="profile-card" data-profile="rain"><div class="profile-heading"><strong data-i18n="profileRain">ขี่ฝนตก</strong><small id="rainProfileSummary"></small></div><div class="profile-actions"><button class="btn primary" data-profile-preview="rain" data-i18n="previewProfile">▶ ทดลอง</button><button class="btn" data-profile-save="rain" data-i18n="saveProfile">เก็บค่าปัจจุบัน</button></div></div>
         </div>
-        <p class="sub" data-i18n="profileDeviceHint">ทดลองโปรไฟล์บนจอเท่านั้น ไม่ส่งคำสั่งไปบอร์ด กดพรีวิวโหมดเพื่อทดลองกับไฟจริง หรือบันทึกลงบอร์ดด้านล่าง</p>
+        <p class="sub" data-i18n="profileDeviceHint">แตะทดลองเพื่อส่งค่าพรีวิวไปบอร์ดเมื่อเชื่อมต่อ หากยังไม่เชื่อมต่อจะจำลองบนจอเท่านั้น การบันทึกลงบอร์ดใช้ปุ่มด้านล่าง</p>
       </div>
     </section>
 
@@ -57,7 +57,7 @@
           <div class="light-row"><div class="light-row-label"><span data-i18n="leftLight">ไฟซ้าย</span><strong id="leftLightValue">50%</strong></div><div class="segments" id="leftLight"></div></div>
           <div class="light-row"><div class="light-row-label"><span data-i18n="rightLight">ไฟขวา</span><strong id="rightLightValue">50%</strong></div><div class="segments" id="rightLight"></div></div>
         </div>
-        <label class="switchline"><span><strong data-i18n="liveChanges">ส่งค่าขณะเลื่อน</strong><small data-i18n="liveChangesHint">พรีวิวการปรับสไลเดอร์อัตโนมัติ</small></span><span class="switch"><input type="checkbox" id="live" checked><i></i></span></label>
+        <label class="switchline"><span><strong data-i18n="liveChanges">Live Preview เปิด/ปิด</strong><small data-i18n="liveChangesHint">เปิดแล้วเลือกโหมดหรือเลื่อนสไลเดอร์จะส่งไปบอร์ดทันที</small></span><span class="switch"><input type="checkbox" id="live"><i></i></span></label>
         <div class="row"><button class="btn primary" id="previewBtn" data-i18n="previewSelected">▶ พรีวิวที่เลือก</button><button class="btn ghost" id="cancelBtn" data-i18n="stopPreview">■ หยุดพรีวิว</button></div>
       </div>
     </section>
@@ -72,7 +72,6 @@
       <div class="panel stack setting-panel" id="drlPanel" role="tabpanel" aria-labelledby="drlTab">
         <h3 data-i18n="drlSettings">ตั้งค่า DRL</h3>
         <div class="field"><label for="drl"><span data-i18n="drlBrightness">ความสว่าง DRL</span> <strong class="value" id="drlNumber">50%</strong></label><input type="range" id="drl" min="0" max="100" value="50"><div class="range-ends"><span>0%</span><span>100%</span></div></div>
-        <div class="field"><label for="fadeDuration"><span data-i18n="fadeDuration">เวลาเฟด DRL</span> <strong class="value" id="fadeNumber">1.3 s</strong></label><input type="range" id="fadeDuration" min="100" max="5000" step="100" value="1300"><p class="sub" data-i18n="fadeExplanation">ค่าเฟดนี้อยู่ในหมวด DRL ของ APK ไม่ใช่จังหวะไฟเลี้ยว ผลตอนปิดไฟยังต้องทดสอบกับบอร์ด</p></div>
         <div class="section-header compact"><h3 data-i18n="quickPresets">ค่าความสว่างสำเร็จรูป</h3><span data-i18n="previewOnly">พรีวิวเท่านั้น</span></div>
         <div class="preset-grid"><button class="btn preset" data-preset="25"><strong data-i18n="night">กลางคืน</strong><small>25%</small></button><button class="btn preset" data-preset="100"><strong data-i18n="daylight">กลางวัน</strong><small>100%</small></button><button class="btn preset" data-preset="60"><strong data-i18n="balanced">สมดุล</strong><small>60%</small></button><button class="btn preset" data-preset="0"><strong data-i18n="off">ปิด</strong><small>0%</small></button></div>
       </div>
@@ -80,25 +79,29 @@
         <h3 data-i18n="turnSettings">ตั้งค่าไฟเลี้ยว</h3>
         <div class="field"><label for="turnBrightness"><span data-i18n="turnBrightness">ความสว่างไฟเลี้ยว</span> <strong class="value" id="turnNumber">100%</strong></label><input type="range" id="turnBrightness" min="0" max="100" value="100"><p class="sub" data-i18n="turnPreviewOnly">ค่านี้ใช้กับพรีวิวเท่านั้น แอปเดิมไม่มีคำสั่งบันทึกค่านี้แยกต่างหาก</p></div>
         <div class="field"><label for="opposite"><span data-i18n="oppositeBrightness">DRL ฝั่งตรงข้าม</span> <strong class="value" id="oppositeNumber">50%</strong></label><input type="range" id="opposite" min="0" max="100" value="50"><p class="sub" data-i18n="oppositeHint">ความสว่างของอีกฝั่งขณะเปิดไฟเลี้ยวซ้ายหรือขวา</p></div>
+        <div class="field"><label for="fadeDuration"><span data-i18n="fadeDuration">เวลา DRL ค่อย ๆ กลับหลังปิดไฟเลี้ยว</span> <strong class="value" id="fadeNumber">5.0 s</strong></label><input type="range" id="fadeDuration" min="100" max="5000" step="100" value="5000"><p class="sub" data-i18n="fadeExplanation">ภาพจำลองจะค่อย ๆ กลับเป็น DRL ในเวลาที่เลือก สูงสุด 5 วินาที เว็บส่ง CFG,FADE ไปบอร์ดเมื่อบันทึก แต่ผลจริงหลังปิดไฟเลี้ยวยังต้องทดสอบกับบอร์ด</p></div>
         <div class="row"><button class="btn" id="leftPreviewBtn" data-i18n="previewLeft">⇦ ทดลองซ้าย</button><button class="btn" id="rightPreviewBtn" data-i18n="previewRight">ทดลองขวา ⇨</button><button class="btn" id="hazardPreviewBtn" data-i18n="previewHazard">⚠ ฉุกเฉิน</button></div>
       </div>
       <div class="panel stack setting-panel hidden" id="welcomePanel" role="tabpanel" aria-labelledby="welcomeTab">
         <h3 data-i18n="welcomeSettings">ไฟต้อนรับตอนเปิดเครื่อง</h3>
-        <p class="sub" data-i18n="welcomeHint">เลือกแบบ 1–3 เพื่อบันทึกลงบอร์ด แบบ 4 ใช้กราฟพรีวิวจากเว็บ</p>
+        <p class="sub" data-i18n="welcomeHint">แตะรูปแบบเพื่อทดลองกับบอร์ดที่เชื่อมต่อ แบบ 1–3 มีคำสั่งบันทึก; กราฟและแบบ 5–6 ทดลองขณะเชื่อมต่อเท่านั้น</p>
         <div class="welcome-grid">
           <button class="welcome-option active" data-welcome="fade-in" aria-pressed="true"><span class="welcome-index">1</span><strong data-i18n="fadeIn">ค่อย ๆ สว่าง</strong><small data-i18n="fadeInHint">สว่างขึ้นอย่างนุ่มนวล</small></button>
           <button class="welcome-option" data-welcome="pulse" aria-pressed="false"><span class="welcome-index">2</span><strong data-i18n="pulse">เต้นเป็นจังหวะ</strong><small data-i18n="pulseHint">สว่างและหรี่เป็นจังหวะ</small></button>
           <button class="welcome-option" data-welcome="flash" aria-pressed="false"><span class="welcome-index">3</span><strong data-i18n="flash">กะพริบ</strong><small data-i18n="flashHint">กะพริบก่อนสว่างค้าง</small></button>
           <button class="welcome-option" data-welcome="custom" aria-pressed="false"><span class="welcome-index">4</span><strong data-i18n="custom">กำหนดเอง</strong><small data-i18n="customHint">วาดกราฟความสว่าง</small></button>
+          <button class="welcome-option" data-welcome="soft-wave" aria-pressed="false"><span class="welcome-index">5</span><strong data-i18n="softWave">คลื่นนุ่ม</strong><small data-i18n="softWaveHint">สว่างขึ้นสองระลอก</small></button>
+          <button class="welcome-option" data-welcome="double-flash" aria-pressed="false"><span class="welcome-index">6</span><strong data-i18n="doubleFlash">แฟลชคู่</strong><small data-i18n="doubleFlashHint">กะพริบสองครั้งแล้วค่อยสว่าง</small></button>
         </div>
         <div id="curveEditor" class="curve-editor hidden">
-          <div class="curve-heading"><strong data-i18n="curveTitle">กราฟความสว่าง</strong><span data-i18n="curveAxes">เวลา 0–5 วินาที · ความสว่าง 0–100%</span></div>
-          <svg id="curveSvg" viewBox="0 0 340 190" role="img" aria-label="Editable brightness curve" data-i18n-aria="curveAccessible"><path class="grid-line" d="M30 15H325M30 53H325M30 91H325M30 129H325M30 167H325M30 15V167M89 15V167M148 15V167M207 15V167M266 15V167M325 15V167"/><polyline id="curveLine" points=""/><g id="curvePoints"></g><text x="30" y="184">0s</text><text x="303" y="184">5s</text><text x="2" y="20">100</text><text x="13" y="170">0</text></svg>
+          <div class="curve-heading"><strong data-i18n="curveTitle">กราฟความสว่าง</strong><span id="curveAxes">เวลา 0–5 วินาที · ความสว่าง 0–100%</span></div>
+          <div class="field"><label for="welcomeDuration"><span data-i18n="welcomeDuration">ระยะเวลากราฟ</span> <strong class="value" id="welcomeDurationNumber">5 s</strong></label><input type="range" id="welcomeDuration" min="5" max="20" step="1" value="5"><div class="range-ends"><span>5 s</span><span>20 s</span></div></div>
+          <svg id="curveSvg" viewBox="0 0 340 190" role="img" aria-label="Editable brightness curve" data-i18n-aria="curveAccessible"><path class="grid-line" d="M30 15H325M30 53H325M30 91H325M30 129H325M30 167H325M30 15V167M89 15V167M148 15V167M207 15V167M266 15V167M325 15V167"/><polyline id="curveLine" points=""/><g id="curvePoints"></g><text x="30" y="184">0s</text><text id="curveEndLabel" x="296" y="184">5s</text><text x="2" y="20">100</text><text x="13" y="170">0</text></svg>
           <label for="pointValue"><span data-i18n="pointBrightness">ความสว่างที่จุด</span> <span id="pointTime">0s</span> <strong class="value" id="pointNumber">0%</strong></label>
           <input type="range" id="pointValue" min="0" max="100" value="0">
           <p class="sub" data-i18n="curveHow">แตะจุดบนกราฟแล้วลากขึ้นลง หรือใช้สไลเดอร์ด้านล่าง</p>
           <button class="btn" id="resetCurveBtn" data-i18n="resetCurve">คืนค่ากราฟเริ่มต้น</button>
-          <p class="notice" data-i18n="customLimit">APK เดิมพรีวิวกราฟด้วยการส่งค่าหลายครั้ง แต่ไม่มีคำสั่งบันทึกกราฟลงบอร์ด จึงยังไม่สามารถบันทึกแบบ 4 ให้ทำงานตอนเปิดเครื่องได้</p>
+          <p class="notice" data-i18n="customLimit">กราฟ 5–20 วินาทีส่งค่าพรีวิวไปบอร์ดขณะเชื่อมต่อได้ แต่ APK ไม่มีคำสั่งบันทึกจุดกราฟหรือระยะเวลาลงบอร์ด แบบนี้จึงยังทำงานเองตอนเปิดเครื่องไม่ได้หากไม่แก้เฟิร์มแวร์</p>
         </div>
         <button class="btn" id="previewWelcomeBtn" data-i18n="previewWelcome">▶ ทดลอง Welcome</button>
       </div>

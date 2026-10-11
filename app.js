@@ -9,9 +9,9 @@ const pwm = percent => Math.round(clamp(Number(percent), 0, 100) * 255 / 100);
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 const defaultCurve = [0, 100, 25, 85, 20, 100];
 const defaultProfiles = {
-  day: {drl:100, turn:100, opposite:50, fade:1300, welcome:'fade-in', curve:defaultCurve},
-  night: {drl:25, turn:100, opposite:25, fade:1800, welcome:'pulse', curve:defaultCurve},
-  rain: {drl:60, turn:100, opposite:40, fade:1000, welcome:'flash', curve:defaultCurve}
+  day: {drl:100, turn:100, opposite:50, fade:5000, welcome:'fade-in', duration:5, curve:defaultCurve},
+  night: {drl:25, turn:100, opposite:25, fade:5000, welcome:'pulse', duration:5, curve:defaultCurve},
+  rain: {drl:60, turn:100, opposite:40, fade:5000, welcome:'flash', duration:5, curve:defaultCurve}
 };
 
 const translations = {
@@ -22,18 +22,18 @@ const translations = {
     profilesHint:'แตะทดลองเพื่อโหลดค่าและดูไฟ DRL ทันที ปรับค่าด้านล่างแล้วบันทึกทับโปรไฟล์ได้',
     profileDay:'ขี่กลางวัน', profileNight:'ขี่กลางคืน', profileRain:'ขี่ฝนตก',
     previewProfile:'▶ ทดลอง', saveProfile:'เก็บค่าปัจจุบัน',
-    profileDeviceHint:'ทดลองโปรไฟล์บนจอเท่านั้น ไม่ส่งคำสั่งไปบอร์ด กดพรีวิวโหมดเพื่อทดลองกับไฟจริง หรือบันทึกลงบอร์ดด้านล่าง',
+    profileDeviceHint:'แตะทดลองเพื่อส่งค่าพรีวิวไปบอร์ดเมื่อเชื่อมต่อ หากยังไม่เชื่อมต่อจะจำลองบนจอเท่านั้น การบันทึกลงบอร์ดใช้ปุ่มด้านล่าง',
     profileSummary:(drl, turn, welcome) => `DRL ${drl}% · เลี้ยว ${turn}% · ${welcome}`,
     profileSaved:'เก็บโปรไฟล์ในเบราว์เซอร์แล้ว', profilePreview:'กำลังทดลองโปรไฟล์',
     profileSaveFailed:'เบราว์เซอร์นี้ไม่อนุญาตให้เก็บโปรไฟล์',
     livePreview:'พรีวิวไฟ', previewHint:'เลือกโหมดเพื่อทดลองไฟทันที',
     drl:'DRL', left:'ซ้าย', right:'ขวา', hazard:'ฉุกเฉิน', fade:'เฟด', animation:'Welcome',
-    leftLight:'ไฟซ้าย', rightLight:'ไฟขวา', liveChanges:'ส่งค่าขณะเลื่อน',
-    liveChangesHint:'พรีวิวการปรับสไลเดอร์อัตโนมัติ', previewSelected:'▶ พรีวิวที่เลือก',
+    leftLight:'ไฟซ้าย', rightLight:'ไฟขวา', liveChanges:'Live Preview เปิด/ปิด',
+    liveChangesHint:'เปิดแล้วเลือกโหมดหรือเลื่อนสไลเดอร์จะส่งไปบอร์ดทันที', previewSelected:'▶ พรีวิวที่เลือก',
     stopPreview:'■ หยุดพรีวิว', lightingSettings:'ตั้งค่าไฟ', chooseSection:'เลือกหมวดด้านล่าง',
     turn:'ไฟเลี้ยว', welcome:'Welcome', drlSettings:'ตั้งค่า DRL',
-    drlBrightness:'ความสว่าง DRL', fadeDuration:'เวลาเฟด DRL',
-    fadeExplanation:'ค่าเฟดนี้อยู่ในหมวด DRL ของ APK ไม่ใช่จังหวะไฟเลี้ยว ผลตอนปิดไฟยังต้องทดสอบกับบอร์ด',
+    drlBrightness:'ความสว่าง DRL', fadeDuration:'เวลา DRL ค่อย ๆ กลับหลังปิดไฟเลี้ยว',
+    fadeExplanation:'ภาพจำลองจะค่อย ๆ กลับเป็น DRL ในเวลาที่เลือก สูงสุด 5 วินาที เว็บส่ง CFG,FADE ไปบอร์ดเมื่อบันทึก แต่ผลจริงหลังปิดไฟเลี้ยวยังต้องทดสอบกับบอร์ด',
     quickPresets:'ค่าความสว่างสำเร็จรูป', previewOnly:'พรีวิวเท่านั้น',
     night:'กลางคืน', daylight:'กลางวัน', balanced:'สมดุล', off:'ปิด',
     turnSettings:'ตั้งค่าไฟเลี้ยว', turnBrightness:'ความสว่างไฟเลี้ยว',
@@ -42,15 +42,18 @@ const translations = {
     oppositeHint:'ความสว่างของอีกฝั่งขณะเปิดไฟเลี้ยวซ้ายหรือขวา',
     previewLeft:'⇦ ทดลองซ้าย', previewRight:'ทดลองขวา ⇨', previewHazard:'⚠ ฉุกเฉิน',
     welcomeSettings:'ไฟต้อนรับตอนเปิดเครื่อง',
-    welcomeHint:'เลือกแบบ 1–3 เพื่อส่งคำสั่งบันทึกลงบอร์ด แบบ 4 ใช้กราฟพรีวิวจากเว็บ',
+    welcomeHint:'แตะรูปแบบเพื่อทดลองกับบอร์ดที่เชื่อมต่อ แบบ 1–3 มีคำสั่งบันทึก; กราฟและแบบ 5–6 ทดลองขณะเชื่อมต่อเท่านั้น',
     fadeIn:'ค่อย ๆ สว่าง', fadeInHint:'สว่างขึ้นอย่างนุ่มนวล',
     pulse:'เต้นเป็นจังหวะ', pulseHint:'สว่างและหรี่เป็นจังหวะ',
     flash:'กะพริบ', flashHint:'กะพริบก่อนสว่างค้าง',
     custom:'กำหนดเอง', customHint:'วาดกราฟความสว่าง',
-    curveTitle:'กราฟความสว่าง', curveAxes:'เวลา 0–5 วินาที · ความสว่าง 0–100%',
+    softWave:'คลื่นนุ่ม', softWaveHint:'สว่างขึ้นสองระลอก',
+    doubleFlash:'แฟลชคู่', doubleFlashHint:'กะพริบสองครั้งแล้วค่อยสว่าง',
+    curveTitle:'กราฟความสว่าง', curveAxes:seconds => `เวลา 0–${seconds} วินาที · ความสว่าง 0–100%`,
+    welcomeDuration:'ระยะเวลากราฟ',
     pointBrightness:'ความสว่างที่จุด', curveHow:'แตะจุดบนกราฟแล้วลากขึ้นลง หรือใช้สไลเดอร์ด้านล่าง',
     resetCurve:'คืนค่ากราฟเริ่มต้น',
-    customLimit:'APK เดิมพรีวิวกราฟด้วยการส่งค่าหลายครั้ง แต่ไม่มีคำสั่งบันทึกกราฟลงบอร์ด จึงยังไม่สามารถบันทึกแบบ 4 ให้ทำงานตอนเปิดเครื่องได้',
+    customLimit:'กราฟ 5–20 วินาทีส่งค่าพรีวิวไปบอร์ดขณะเชื่อมต่อได้ แต่ APK ไม่มีคำสั่งบันทึกจุดกราฟหรือระยะเวลาลงบอร์ด แบบนี้จึงยังทำงานเองตอนเปิดเครื่องไม่ได้หากไม่แก้เฟิร์มแวร์',
     previewWelcome:'▶ ทดลอง Welcome', readDevice:'↻ อ่านค่าจากบอร์ด',
     saveDevice:'⬆ บันทึกลงบอร์ด',
     saveWarning:'บอร์ดต้องตอบกลับหรือทดสอบเปิดเครื่องใหม่ จึงจะยืนยันว่าบันทึกสำเร็จ',
@@ -72,7 +75,10 @@ const translations = {
     resetConfirm:'คืนค่าโรงงาน? การตั้งค่าปัจจุบันอาจถูกลบ',
     resetAgain:'ยืนยันอีกครั้งว่าจะส่ง RESET ไปยังบอร์ด',
     logCopied:'คัดลอกบันทึกแล้ว', copyFailed:'คัดลอกบันทึกไม่ได้',
-    noDevice:'ต้องเชื่อมต่อบอร์ดก่อนจึงจะพรีวิวไฟจริงได้'
+    noDevice:'ยังไม่ต่อบอร์ด แสดงภาพจำลองบนจอเท่านั้น',
+    liveNeedsDevice:'ต่อบอร์ดก่อนเปิด Live Preview',
+    liveEnabled:'เปิด Live Preview แล้ว', liveDisabled:'ปิด Live Preview แล้ว',
+    graphCannotSave:'รูปแบบนี้เล่นบนบอร์ดขณะเชื่อมต่อได้ แต่บอร์ดยังไม่มีคำสั่งบันทึกให้เล่นเองตอนเปิดเครื่อง'
   },
   en: {
     language:'Language', motorcycleLights:'Simulated motorcycle front lights', curveAccessible:'Editable brightness curve',
@@ -81,18 +87,18 @@ const translations = {
     profilesHint:'Tap Preview to load the settings and see DRL immediately. Adjust settings below, then save them to a profile.',
     profileDay:'Day ride', profileNight:'Night ride', profileRain:'Rain ride',
     previewProfile:'▶ Preview', saveProfile:'Save current settings',
-    profileDeviceHint:'Profile preview stays on screen and sends no board command. Use a mode button for a live light preview, or Save to device below.',
+    profileDeviceHint:'Tap Preview to send temporary values when connected. Without a board, only the screen simulation runs. Use Save to device below to store supported settings.',
     profileSummary:(drl, turn, welcome) => `DRL ${drl}% · Turn ${turn}% · ${welcome}`,
     profileSaved:'Profile saved in this browser', profilePreview:'Previewing profile',
     profileSaveFailed:'This browser could not save the profile',
     livePreview:'Live lighting preview', previewHint:'Choose a mode to preview the lights',
     drl:'DRL', left:'Left', right:'Right', hazard:'Hazard', fade:'Fade', animation:'Welcome',
-    leftLight:'Left light', rightLight:'Right light', liveChanges:'Send live changes',
-    liveChangesHint:'Preview slider changes automatically', previewSelected:'▶ Preview selected',
+    leftLight:'Left light', rightLight:'Right light', liveChanges:'Live Preview on/off',
+    liveChangesHint:'When on, mode and slider changes are sent to the board', previewSelected:'▶ Preview selected',
     stopPreview:'■ Stop preview', lightingSettings:'Lighting settings', chooseSection:'Choose a section below',
     turn:'Turn signal', welcome:'Welcome', drlSettings:'DRL settings',
-    drlBrightness:'DRL brightness', fadeDuration:'DRL fade duration',
-    fadeExplanation:'The APK groups this fade value under DRL, not turn-signal timing. Its effect when switching off still needs a board test.',
+    drlBrightness:'DRL brightness', fadeDuration:'DRL return fade after turn signal',
+    fadeExplanation:'The simulation fades back to DRL over up to 5 seconds. Save sends CFG,FADE to the board, but its physical turn-off behavior still needs a board test.',
     quickPresets:'Quick brightness presets', previewOnly:'Preview only',
     night:'Night', daylight:'Daylight', balanced:'Balanced', off:'Off',
     turnSettings:'Turn-signal settings', turnBrightness:'Turn brightness',
@@ -101,15 +107,18 @@ const translations = {
     oppositeHint:'Brightness of the other side during a left or right turn signal',
     previewLeft:'⇦ Preview left', previewRight:'Preview right ⇨', previewHazard:'⚠ Hazard',
     welcomeSettings:'Startup Welcome animation',
-    welcomeHint:'Modes 1–3 send a save command to the board. Mode 4 previews an editable curve from this page.',
+    welcomeHint:'Tap a pattern to preview on a connected board. Modes 1–3 have save commands; the graph and modes 5–6 run only while connected.',
     fadeIn:'Fade in', fadeInHint:'Gradually brightens',
     pulse:'Pulse', pulseHint:'Brightens and dims in a rhythm',
     flash:'Flash', flashHint:'Flashes, then stays on',
     custom:'Custom', customHint:'Draw a brightness curve',
-    curveTitle:'Brightness curve', curveAxes:'Time 0–5 s · Brightness 0–100%',
+    softWave:'Soft wave', softWaveHint:'Two smooth waves of light',
+    doubleFlash:'Double flash', doubleFlashHint:'Two flashes, then a gentle rise',
+    curveTitle:'Brightness curve', curveAxes:seconds => `Time 0–${seconds} s · Brightness 0–100%`,
+    welcomeDuration:'Curve duration',
     pointBrightness:'Brightness at', curveHow:'Drag a point up or down, or use the slider below',
     resetCurve:'Reset curve',
-    customLimit:'The original APK previews the curve by sending repeated values, but has no command to store it on the board. Mode 4 cannot yet run at startup.',
+    customLimit:'The 5–20 second curve can stream a live preview to a connected board. The APK has no command to save keyframes or duration, so it cannot run at startup without firmware changes.',
     previewWelcome:'▶ Preview Welcome', readDevice:'↻ Read from device',
     saveDevice:'⬆ Save to device',
     saveWarning:'A board response or power-cycle test is needed to confirm the settings were saved.',
@@ -131,7 +140,10 @@ const translations = {
     resetConfirm:'Restore factory defaults? Current settings may be erased.',
     resetAgain:'Final confirmation: send RESET to the board?',
     logCopied:'Log copied', copyFailed:'Could not copy log',
-    noDevice:'Connect the board to preview its lights'
+    noDevice:'No board connected; showing the on-screen simulation only',
+    liveNeedsDevice:'Connect the board before enabling Live Preview',
+    liveEnabled:'Live Preview enabled', liveDisabled:'Live Preview disabled',
+    graphCannotSave:'This pattern can run while connected, but the board has no known command to store it for startup'
   }
 };
 
@@ -146,13 +158,21 @@ function storedCurve() {
   } catch {}
   return defaultCurve.slice();
 }
+function storedWelcomeDuration() {
+  try {
+    const value = Number(localStorage.getItem('piskraft-welcome-duration'));
+    if (Number.isInteger(value) && value >= 5 && value <= 20) return value;
+  } catch {}
+  return 5;
+}
 function validProfile(raw, fallback) {
   if (!raw || typeof raw !== 'object') return {...fallback, curve:fallback.curve.slice()};
   const percent = key => Number.isFinite(raw[key]) && raw[key] >= 0 && raw[key] <= 100 ? Math.round(raw[key]) : fallback[key];
   return {
     drl:percent('drl'), turn:percent('turn'), opposite:percent('opposite'),
     fade:Number.isFinite(raw.fade) && raw.fade >= 100 && raw.fade <= 5000 ? Math.round(raw.fade / 100) * 100 : fallback.fade,
-    welcome:['fade-in','pulse','flash','custom'].includes(raw.welcome) ? raw.welcome : fallback.welcome,
+    welcome:['fade-in','pulse','flash','custom','soft-wave','double-flash'].includes(raw.welcome) ? raw.welcome : fallback.welcome,
+    duration:Number.isInteger(raw.duration) && raw.duration >= 5 && raw.duration <= 20 ? raw.duration : fallback.duration,
     curve:Array.isArray(raw.curve) && raw.curve.length === 6 && raw.curve.every(value => Number.isFinite(value) && value >= 0 && value <= 100)
       ? raw.curve.slice() : fallback.curve.slice()
   };
@@ -167,6 +187,7 @@ const state = {
   language: storedLanguage(), device: null, server: null, rx: null, tx: null,
   connected: false, connecting: false, queue: Promise.resolve(), epoch: 0,
   mode: 'DRL', setting: 'drl', welcome: 'fade-in', curve: storedCurve(),
+  welcomeDuration: storedWelcomeDuration(), lastLevels:[50,50], returnFromTurn:null,
   selectedPoint: 0, previewTimer: null, welcomeRun: 0, visualTimer: null, blinkOn: true,
   profiles: storedProfiles(), activeProfile: null, config: null
 };
@@ -193,6 +214,7 @@ function connectionUI() {
   $('deviceDetails').textContent = tr(state.connected ? 'connectedDetails' : 'bluetoothRequired');
   $('connectBtn').textContent = tr(state.connected ? 'disconnect' : 'connect');
   $('connectBtn').disabled = state.connecting;
+  if (!state.connected) $('live').checked = false;
 }
 function setLanguage(language) {
   state.language = language === 'en' ? 'en' : 'th';
@@ -202,6 +224,7 @@ function setLanguage(language) {
   document.querySelectorAll('[data-i18n-aria]').forEach(el => { el.setAttribute('aria-label', tr(el.dataset.i18nAria)); });
   connectionUI();
   renderProfiles();
+  updateCurveLabels();
   try { localStorage.setItem('piskraft-language', state.language); } catch {}
 }
 
@@ -249,6 +272,7 @@ async function connect() {
     state.epoch++;
     state.queue = Promise.resolve();
     log('Connected to ' + (device.name || 'PISKRAFT'));
+    $('saveStatus').textContent = tr('saveWarning');
     toast(tr('connectedToast') + (device.name || 'PISKRAFT'));
   } catch (error) {
     log('Connect failed: ' + error.message);
@@ -331,31 +355,40 @@ function previewCommand(mode, brightness) {
   const base = 'PREVIEW,' + boardMode + ',' + Math.round(level);
   return ['LEFT','RIGHT'].includes(mode) ? base + ',' + $('opposite').value : base;
 }
-function preview() {
-  if (state.mode === 'ANIMATION') return previewWelcome();
+function preview(sendToBoard = true) {
+  if (state.mode === 'ANIMATION') return previewWelcome(sendToBoard);
   stopWelcome();
   startVisualMode();
-  return state.connected ? send(previewCommand(state.mode)) : Promise.resolve(true);
+  if (!sendToBoard) return Promise.resolve(true);
+  if (!state.connected) { toast(tr('noDevice')); return Promise.resolve(false); }
+  return send(previewCommand(state.mode));
 }
 function schedulePreview() {
-  if (!$('live').checked) return;
+  if (!$('live').checked || !state.connected) return;
   clearTimeout(state.previewTimer);
-  state.previewTimer = setTimeout(() => { if (state.connected) preview(); }, 200);
+  state.previewTimer = setTimeout(() => { if (state.connected && $('live').checked) preview(true); }, 200);
 }
 function cancelPreview() {
   clearTimeout(state.previewTimer);
   stopWelcome();
   clearInterval(state.visualTimer);
   state.visualTimer = null;
-  updateLights(0, 0);
+  $('live').checked = false;
+  if (['LEFT','RIGHT','HAZARD'].includes(state.mode)) selectMode('DRL', false);
+  else updateLights(0, 0);
   return state.connected ? send('CANCEL') : Promise.resolve(true);
 }
-function selectMode(mode, shouldPreview = true) {
+function selectMode(mode, shouldPreview = $('live').checked) {
+  state.returnFromTurn = mode === 'DRL'
+    ? (state.mode === 'LEFT' ? [0,state.lastLevels[1]]
+      : state.mode === 'RIGHT' ? [state.lastLevels[0],0]
+      : state.mode === 'HAZARD' ? [0,0] : null)
+    : null;
   clearInterval(state.visualTimer);
   state.visualTimer = null;
   stopWelcome();
   state.mode = mode;
-  if (['LEFT','RIGHT','HAZARD'].includes(mode)) selectSetting('turn');
+  if (['LEFT','RIGHT','HAZARD','FADE'].includes(mode)) selectSetting('turn');
   else if (mode === 'ANIMATION') selectSetting('welcome');
   else selectSetting('drl');
   document.querySelectorAll('[data-mode]').forEach(button => {
@@ -363,8 +396,7 @@ function selectMode(mode, shouldPreview = true) {
     button.classList.toggle('active', selected);
     button.setAttribute('aria-pressed', String(selected));
   });
-  if (shouldPreview) preview();
-  else updateLights();
+  preview(shouldPreview);
 }
 function selectSetting(setting) {
   state.setting = setting;
@@ -394,6 +426,7 @@ function updateLights(left, right) {
     HAZARD:[state.blinkOn ? turn : 0,state.blinkOn ? turn : 0], FADE:[drl,drl], ANIMATION:[drl,drl]
   };
   [left,right] = left == null ? levels[state.mode] : [left,right];
+  state.lastLevels = [left,right];
   for (const [id, value] of [['leftLight',left],['rightLight',right]]) {
     $(id + 'Value').textContent = Math.round(value) + '%';
     $(id).querySelectorAll('i').forEach((segment, index) => segment.classList.toggle('on', index < Math.round(value * 12 / 100)));
@@ -413,6 +446,23 @@ function startVisualMode() {
   clearInterval(state.visualTimer);
   state.visualTimer = null;
   state.blinkOn = true;
+  const returnFromTurn = state.returnFromTurn;
+  state.returnFromTurn = null;
+  if (returnFromTurn && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const started = performance.now();
+    const duration = Number($('fadeDuration').value);
+    const target = Number($('drl').value);
+    updateLights(...returnFromTurn);
+    state.visualTimer = setInterval(() => {
+      const progress = Math.min(1, (performance.now() - started) / duration);
+      updateLights(
+        returnFromTurn[0] + (target - returnFromTurn[0]) * progress,
+        returnFromTurn[1] + (target - returnFromTurn[1]) * progress
+      );
+      if (progress === 1) { clearInterval(state.visualTimer); state.visualTimer = null; }
+    }, 50);
+    return;
+  }
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) { updateLights(); return; }
   if (['LEFT','RIGHT','HAZARD'].includes(state.mode)) {
     updateLights();
@@ -437,38 +487,60 @@ function updateValues() {
   updateLights();
 }
 function curveValue(time) {
-  const before = Math.floor(time);
+  const position = time * 5 / state.welcomeDuration;
+  const before = Math.floor(position);
   if (before >= 5) return state.curve[5];
-  const fraction = time - before;
+  const fraction = position - before;
   return state.curve[before] + (state.curve[before + 1] - state.curve[before]) * fraction;
+}
+function samplePattern(points, time) {
+  for (let index = 1; index < points.length; index++) {
+    if (time <= points[index][0]) {
+      const [startTime, startValue] = points[index - 1];
+      const [endTime, endValue] = points[index];
+      return startValue + (endValue - startValue) * (time - startTime) / (endTime - startTime);
+    }
+  }
+  return points.at(-1)[1];
 }
 function welcomeValue(time) {
   const full = Number($('drl').value);
   if (state.welcome === 'custom') return curveValue(time);
   if (state.welcome === 'fade-in') return full * Math.min(1, time / 2);
-  if (state.welcome === 'pulse') return full * (0.25 + 0.75 * (1 - Math.cos(Math.PI * 2 * time / 1.5)) / 2);
+  if (state.welcome === 'pulse') return time >= 4.5 ? full : full * (0.25 + 0.75 * (1 - Math.cos(Math.PI * 2 * time / 1.5)) / 2);
+  if (state.welcome === 'soft-wave') return full * samplePattern([[0,0],[0.9,0.85],[1.7,0.25],[2.9,1],[3.7,0.5],[5,1]], time);
+  if (state.welcome === 'double-flash') return full * samplePattern([[0,0],[0.15,1],[0.4,0],[0.65,1],[0.95,0],[3.2,1],[5,1]], time);
   if (time < 2.5) return Math.floor(time * 3) % 2 ? full : 0;
   return full;
 }
-async function previewWelcome() {
+async function previewWelcome(sendToBoard = true) {
   clearTimeout(state.previewTimer);
   clearInterval(state.visualTimer);
   state.visualTimer = null;
   const run = ++state.welcomeRun;
-  const mode = state.welcome === 'custom' ? 'CUSTOM' : 'ANIMATION';
+  if (sendToBoard && !state.connected) { toast(tr('noDevice')); sendToBoard = false; }
+  const duration = state.welcome === 'custom' ? state.welcomeDuration : 5;
   const start = performance.now();
   while (run === state.welcomeRun) {
-    const elapsed = Math.min(5, (performance.now() - start) / 1000);
+    const elapsed = Math.min(duration, (performance.now() - start) / 1000);
     const brightness = clamp(Math.round(welcomeValue(elapsed)), 0, 100);
     updateLights(brightness, brightness);
-    if (state.connected && !await send('PREVIEW,' + mode + ',' + brightness)) return false;
-    if (elapsed >= 5) break;
-    await delay(250);
+    if (sendToBoard && !await send(previewCommand('DRL', brightness))) return false;
+    if (elapsed >= duration) break;
+    await delay(sendToBoard ? 160 : 50);
   }
   return true;
 }
 function saveCurveLocally() {
   try { localStorage.setItem('piskraft-curve', JSON.stringify(state.curve)); } catch {}
+}
+function updateCurveLabels() {
+  const seconds = state.welcomeDuration;
+  $('welcomeDuration').value = seconds;
+  $('welcomeDurationNumber').textContent = seconds + ' s';
+  $('curveAxes').textContent = tr('curveAxes')(seconds);
+  $('curveEndLabel').textContent = seconds + 's';
+  $('pointTime').textContent = Number((state.selectedPoint * seconds / 5).toFixed(1)) + 's';
 }
 function drawCurve() {
   const points = state.curve.map((value, index) => (30 + 59 * index) + ',' + (167 - value * 1.52)).join(' ');
@@ -484,7 +556,7 @@ function drawCurve() {
     circle.dataset.index = String(index);
     group.appendChild(circle);
   });
-  $('pointTime').textContent = state.selectedPoint + 's';
+  updateCurveLabels();
   $('pointValue').value = String(state.curve[state.selectedPoint]);
   $('pointNumber').textContent = state.curve[state.selectedPoint] + '%';
 }
@@ -503,7 +575,7 @@ function movePoint(event) {
 }
 function renderProfiles() {
   for (const [key, profile] of Object.entries(state.profiles)) {
-    const welcomeName = tr({ 'fade-in':'fadeIn', pulse:'pulse', flash:'flash', custom:'custom' }[profile.welcome]);
+    const welcomeName = tr({ 'fade-in':'fadeIn', pulse:'pulse', flash:'flash', custom:'custom', 'soft-wave':'softWave', 'double-flash':'doubleFlash' }[profile.welcome]);
     $(key + 'ProfileSummary').textContent = tr('profileSummary')(profile.drl, profile.turn, welcomeName);
     document.querySelector(`[data-profile="${key}"]`).classList.toggle('active', key === state.activeProfile);
   }
@@ -515,7 +587,8 @@ function markProfileEdited() {
 function currentProfile() {
   return {
     drl:Number($('drl').value), turn:Number($('turnBrightness').value), opposite:Number($('opposite').value),
-    fade:Number($('fadeDuration').value), welcome:state.welcome, curve:state.curve.slice()
+    fade:Number($('fadeDuration').value), welcome:state.welcome,
+    duration:state.welcomeDuration, curve:state.curve.slice()
   };
 }
 function previewProfile(key) {
@@ -526,15 +599,15 @@ function previewProfile(key) {
   $('opposite').value = profile.opposite;
   $('fadeDuration').value = profile.fade;
   state.curve = profile.curve.slice();
+  state.welcomeDuration = profile.duration;
   selectWelcome(profile.welcome);
   drawCurve();
   updateValues();
   state.activeProfile = key;
   renderProfiles();
-  selectMode('DRL', false);
-  startVisualMode();
+  selectMode('DRL', state.connected);
   $('previewTitle').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block:'start'});
-  toast(tr('profilePreview') + ': ' + tr({day:'profileDay', night:'profileNight', rain:'profileRain'}[key]));
+  toast((state.connected ? tr('profilePreview') : tr('noDevice')) + ': ' + tr({day:'profileDay', night:'profileNight', rain:'profileRain'}[key]));
 }
 function saveProfile(key) {
   if (!state.profiles[key]) return;
@@ -557,8 +630,7 @@ document.querySelectorAll('[data-setting]').forEach(button => button.addEventLis
 document.querySelectorAll('[data-welcome]').forEach(button => button.addEventListener('click', () => {
   selectWelcome(button.dataset.welcome);
   markProfileEdited();
-  selectMode('ANIMATION', false);
-  previewWelcome();
+  selectMode('ANIMATION', true);
 }));
 for (const id of ['drl','turnBrightness','opposite','fadeDuration']) {
   $(id).addEventListener('input', () => { markProfileEdited(); updateValues(); if (id !== 'fadeDuration') schedulePreview(); });
@@ -567,22 +639,35 @@ document.querySelectorAll('[data-preset]').forEach(button => button.addEventList
   $('drl').value = button.dataset.preset;
   markProfileEdited();
   updateValues();
-  selectMode('DRL');
+  selectMode('DRL', true);
 }));
 for (const [id, mode] of [['leftPreviewBtn','LEFT'],['rightPreviewBtn','RIGHT'],['hazardPreviewBtn','HAZARD']]) {
-  $(id).addEventListener('click', () => selectMode(mode));
+  $(id).addEventListener('click', () => selectMode(mode, true));
 }
+$('live').addEventListener('change', event => {
+  if (event.target.checked) {
+    if (!state.connected) { event.target.checked = false; toast(tr('liveNeedsDevice')); return; }
+    toast(tr('liveEnabled'));
+    preview(true);
+  } else {
+    cancelPreview();
+    toast(tr('liveDisabled'));
+  }
+});
 $('language').addEventListener('change', event => setLanguage(event.target.value));
 $('connectBtn').addEventListener('click', connect);
-$('previewBtn').addEventListener('click', preview);
+$('previewBtn').addEventListener('click', () => preview(true));
 $('cancelBtn').addEventListener('click', cancelPreview);
-$('previewWelcomeBtn').addEventListener('click', () => { selectMode('ANIMATION', false); previewWelcome(); });
-$('readBtn').addEventListener('click', async () => { if (await send('REQ')) toast(tr('readSent')); });
+$('previewWelcomeBtn').addEventListener('click', () => selectMode('ANIMATION', true));
+$('readBtn').addEventListener('click', async () => {
+  if (!state.connected) { toast(tr('connectFirst')); $('saveStatus').textContent = tr('connectFirst'); return; }
+  if (await send('REQ')) { toast(tr('readSent')); $('saveStatus').textContent = tr('readSent'); }
+});
 $('reqBtn').addEventListener('click', () => send('REQ'));
 $('pingBtn').addEventListener('click', () => send('PING'));
 $('saveBtn').addEventListener('click', async () => {
   if (!state.connected) { toast(tr('connectFirst')); return; }
-  if (state.welcome === 'custom') { toast(tr('customCannotSave')); $('saveStatus').textContent = tr('customCannotSave'); return; }
+  if (!['fade-in','pulse','flash'].includes(state.welcome)) { toast(tr('graphCannotSave')); $('saveStatus').textContent = tr('graphCannotSave'); return; }
   clearTimeout(state.previewTimer);
   stopWelcome();
   const animation = {'fade-in':0, pulse:1, flash:2}[state.welcome];
@@ -623,6 +708,13 @@ $('pointValue').addEventListener('input', event => {
   drawCurve();
   saveCurveLocally();
   markProfileEdited();
+});
+$('welcomeDuration').addEventListener('input', event => {
+  state.welcomeDuration = Number(event.target.value);
+  updateCurveLabels();
+  markProfileEdited();
+  try { localStorage.setItem('piskraft-welcome-duration', String(state.welcomeDuration)); } catch {}
+  if (state.mode === 'ANIMATION' && state.welcome === 'custom') previewWelcome(state.connected && $('live').checked);
 });
 $('resetCurveBtn').addEventListener('click', () => {
   state.curve = defaultCurve.slice();
