@@ -40,6 +40,12 @@ const translations = {
     turnPreviewOnly:'ค่านี้ใช้กับพรีวิวเท่านั้น แอปเดิมไม่มีคำสั่งบันทึกค่านี้แยกต่างหาก',
     oppositeBrightness:'DRL ฝั่งตรงข้าม',
     oppositeHint:'ความสว่างของอีกฝั่งขณะเปิดไฟเลี้ยวซ้ายหรือขวา',
+    turnSpeed:'ความเร็วไฟเลี้ยว (ทดลอง)',
+    turnSpeedHint:'ปรับจังหวะภาพจำลองซ้าย/ขวา/ฉุกเฉิน กดทดลองเพื่อส่งคำสั่งพรีวิวไปบอร์ด 15 วินาที รีเลย์อาจกำหนดจังหวะเอง และค่านี้ไม่บันทึกลงบอร์ด',
+    startTurnSpeed:'▶ ทดลองความเร็ว 15 วินาที', stopTurnSpeed:'■ หยุด',
+    turnSpeedReady:'เลือกซ้าย ขวา หรือฉุกเฉินด้านบนแล้วเชื่อมต่อบอร์ดเพื่อทดลอง',
+    turnSpeedRunning:'กำลังส่งจังหวะไปบอร์ด · ผลจริงขึ้นกับบอร์ดและรีเลย์',
+    turnSpeedStopped:'หยุดทดลองแล้ว', turnSpeedTimedOut:'ครบ 15 วินาทีแล้ว · ดูจังหวะไฟจริงที่รถ',
     welcomeSettings:'ไฟต้อนรับตอนเปิดเครื่อง',
     welcomeHint:'แตะรูปแบบเพื่อทดลองกับบอร์ดที่เชื่อมต่อ แบบ 1–3 บันทึกได้ ส่วนแบบอื่นทดลองได้ขณะเชื่อมต่อ',
     fadeIn:'ค่อย ๆ สว่าง', fadeInHint:'สว่างขึ้นอย่างนุ่มนวล',
@@ -122,6 +128,12 @@ const translations = {
     turnPreviewOnly:'This value is for preview only. The original app has no separate command to save it.',
     oppositeBrightness:'Opposite-side DRL',
     oppositeHint:'Brightness of the other side during a left or right turn signal',
+    turnSpeed:'Turn-signal speed (experimental)',
+    turnSpeedHint:'Adjusts the Left/Right/Hazard screen animation. Test streams preview commands to the board for 15 seconds. The relay may set its own timing, and this value is not saved to the board.',
+    startTurnSpeed:'▶ Test speed for 15 seconds', stopTurnSpeed:'■ Stop',
+    turnSpeedReady:'Select Left, Right, or Hazard above and connect the board to test',
+    turnSpeedRunning:'Streaming a rhythm to the board · actual timing depends on the board and relay',
+    turnSpeedStopped:'Speed test stopped', turnSpeedTimedOut:'15 seconds complete · check the actual lights on the vehicle',
     welcomeSettings:'Startup Welcome animation',
     welcomeHint:'Tap a pattern to preview on a connected board. Modes 1–3 can be saved; the others run only while connected.',
     fadeIn:'Fade in', fadeInHint:'Gradually brightens',
@@ -199,6 +211,13 @@ function storedWelcomeDuration() {
   } catch {}
   return 5;
 }
+function storedTurnBpm() {
+  try {
+    const value = Number(localStorage.getItem('piskraft-turn-bpm'));
+    if (Number.isInteger(value) && value >= 60 && value <= 160 && value % 5 === 0) return value;
+  } catch {}
+  return 80;
+}
 function validProfile(raw, fallback) {
   if (!raw || typeof raw !== 'object') return {...fallback, curve:fallback.curve.slice()};
   const percent = key => Number.isFinite(raw[key]) && raw[key] >= 0 && raw[key] <= 100 ? Math.round(raw[key]) : fallback[key];
@@ -223,6 +242,7 @@ const state = {
   mode: 'DRL', setting: 'drl', welcome: 'fade-in', curve: storedCurve(),
   welcomeDuration: storedWelcomeDuration(), lastLevels:[50,50], returnFromTurn:null,
   selectedPoint: 0, previewTimer: null, welcomeRun: 0, visualTimer: null, blinkOn: true,
+  turnBpm: storedTurnBpm(),
   profiles: storedProfiles(), activeProfile: null, config: null
 };
 const testSteps = [
@@ -237,7 +257,7 @@ const rhythmSequences = {
   alternating:['LEFT','RIGHT'],
   syncopated:['LEFT','LEFT','RIGHT','RIGHT','LEFT','LEFT','RIGHT','LEFT','RIGHT','RIGHT']
 };
-const toolState = {kind:null, run:0, step:-1, completed:0, remaining:6, results:[], bpm:80, rhythm:'double', beat:0, rhythmOnBoard:false, testStatus:'testReady', rhythmStatus:'rhythmOffline'};
+const toolState = {kind:null, run:0, step:-1, completed:0, remaining:6, results:[], bpm:80, rhythm:'double', beat:0, rhythmOnBoard:false, testStatus:'testReady', rhythmStatus:'rhythmOffline', turnSpeedStatus:'turnSpeedReady'};
 const logLines = [];
 const tr = key => translations[state.language][key] || key;
 function log(message) {
@@ -513,7 +533,7 @@ function startVisualMode() {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) { updateLights(); return; }
   if (['LEFT','RIGHT','HAZARD'].includes(state.mode)) {
     updateLights();
-    state.visualTimer = setInterval(() => { state.blinkOn = !state.blinkOn; updateLights(); }, 460);
+    state.visualTimer = setInterval(() => { state.blinkOn = !state.blinkOn; updateLights(); }, 30000 / state.turnBpm);
   } else updateLights();
 }
 function updateValues() {
@@ -602,7 +622,8 @@ function stopActiveTool(sendCancel = true) {
   toolState.kind = null;
   toolState.run++;
   if (kind === 'test') toolState.testStatus = 'testStopped';
-  else toolState.rhythmStatus = 'rhythmStopped';
+  else if (kind === 'rhythm') toolState.rhythmStatus = 'rhythmStopped';
+  else toolState.turnSpeedStatus = 'turnSpeedStopped';
   updateLights(0, 0, '');
   renderToolText();
   return sendCancel && state.connected
@@ -645,10 +666,16 @@ function renderRhythmBeats() {
 function renderToolText() {
   const testing = toolState.kind === 'test';
   const rhythmic = toolState.kind === 'rhythm';
+  const turnSpeedTesting = toolState.kind === 'turnSpeed';
   $('startSelfTest').disabled = testing;
   $('stopSelfTest').disabled = !testing;
   $('startRhythm').disabled = rhythmic;
   $('stopRhythm').disabled = !rhythmic;
+  $('startTurnSpeed').disabled = turnSpeedTesting;
+  $('stopTurnSpeed').disabled = !turnSpeedTesting;
+  $('turnBpm').value = String(state.turnBpm);
+  $('turnBpmNumber').textContent = state.turnBpm + ' BPM';
+  $('turnSpeedStatus').textContent = tr(turnSpeedTesting ? 'turnSpeedRunning' : toolState.turnSpeedStatus);
   $('testStatus').textContent = testing
     ? tr('testStep')(toolState.step + 1, testSteps.length, tr(testSteps[toolState.step].name), toolState.remaining)
     : tr(toolState.testStatus);
@@ -763,6 +790,47 @@ async function runRhythm() {
   toolState.rhythmStatus = 'rhythmTimedOut';
   renderToolText();
 }
+async function runTurnSpeedTest() {
+  if (!state.connected) {
+    toolState.turnSpeedStatus = 'connectFirst';
+    renderToolText();
+    toast(tr('connectFirst'));
+    return;
+  }
+  const mode = state.mode;
+  if (!['LEFT','RIGHT','HAZARD'].includes(mode)) return;
+  await stopActiveTool();
+  pauseForTool();
+  const run = ++toolState.run;
+  toolState.kind = 'turnSpeed';
+  const started = performance.now();
+  let nextPhase = started;
+  let on = true;
+  renderToolText();
+  while (run === toolState.run && performance.now() - started < 15000) {
+    const turn = on ? Number($('turnBrightness').value) : 0;
+    const other = Number($('opposite').value);
+    if (mode === 'LEFT') updateLights(turn, other, on ? 'left' : '');
+    else if (mode === 'RIGHT') updateLights(other, turn, on ? 'right' : '');
+    else updateLights(turn, turn, on ? 'both' : '');
+    if (!await send(previewCommand(mode, turn, other))) {
+      if (run === toolState.run) {
+        await stopActiveTool();
+        toolState.turnSpeedStatus = 'testSendFailed';
+        renderToolText();
+      }
+      return;
+    }
+    if (run !== toolState.run) return;
+    nextPhase += 30000 / state.turnBpm;
+    await delay(Math.max(0, nextPhase - performance.now()));
+    on = !on;
+  }
+  if (run !== toolState.run) return;
+  await stopActiveTool();
+  toolState.turnSpeedStatus = 'turnSpeedTimedOut';
+  renderToolText();
+}
 function saveCurveLocally() {
   try { localStorage.setItem('piskraft-curve', JSON.stringify(state.curve)); } catch {}
 }
@@ -866,6 +934,14 @@ document.querySelectorAll('[data-welcome]').forEach(button => button.addEventLis
 for (const id of ['drl','turnBrightness','opposite','fadeDuration']) {
   $(id).addEventListener('input', () => { markProfileEdited(); updateValues(); if (id !== 'fadeDuration') schedulePreview(); });
 }
+$('turnBpm').addEventListener('input', event => {
+  state.turnBpm = Number(event.target.value);
+  try { localStorage.setItem('piskraft-turn-bpm', String(state.turnBpm)); } catch {}
+  renderToolText();
+  if (!toolState.kind && ['LEFT','RIGHT','HAZARD'].includes(state.mode)) startVisualMode();
+});
+$('startTurnSpeed').addEventListener('click', runTurnSpeedTest);
+$('stopTurnSpeed').addEventListener('click', () => stopActiveTool());
 document.querySelectorAll('[data-preset]').forEach(button => button.addEventListener('click', () => {
   $('drl').value = button.dataset.preset;
   markProfileEdited();
