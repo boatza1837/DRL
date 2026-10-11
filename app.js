@@ -8,10 +8,24 @@ const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
 const pwm = percent => Math.round(clamp(Number(percent), 0, 100) * 255 / 100);
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 const defaultCurve = [0, 100, 25, 85, 20, 100];
+const defaultProfiles = {
+  day: {drl:100, turn:100, opposite:50, fade:1300, welcome:'fade-in', curve:defaultCurve},
+  night: {drl:25, turn:100, opposite:25, fade:1800, welcome:'pulse', curve:defaultCurve},
+  rain: {drl:60, turn:100, opposite:40, fade:1000, welcome:'flash', curve:defaultCurve}
+};
 
 const translations = {
   th: {
-    language:'ภาษา', motorcycleLights:'ไฟหน้ารถจักรยานยนต์', curveAccessible:'กราฟความสว่างที่แก้ไขได้',
+    language:'ภาษา', motorcycleLights:'ภาพจำลองไฟหน้ารถจักรยานยนต์', curveAccessible:'กราฟความสว่างที่แก้ไขได้',
+    visualSimulation:'ภาพจำลองไฟ • ไม่ใช่สถานะจริงจากบอร์ด',
+    myProfiles:'โปรไฟล์ไฟส่วนตัว', profilesLocal:'เก็บในเบราว์เซอร์นี้',
+    profilesHint:'แตะทดลองเพื่อโหลดค่าและดูไฟ DRL ทันที ปรับค่าด้านล่างแล้วบันทึกทับโปรไฟล์ได้',
+    profileDay:'ขี่กลางวัน', profileNight:'ขี่กลางคืน', profileRain:'ขี่ฝนตก',
+    previewProfile:'▶ ทดลอง', saveProfile:'เก็บค่าปัจจุบัน',
+    profileDeviceHint:'ทดลองโปรไฟล์บนจอเท่านั้น ไม่ส่งคำสั่งไปบอร์ด กดพรีวิวโหมดเพื่อทดลองกับไฟจริง หรือบันทึกลงบอร์ดด้านล่าง',
+    profileSummary:(drl, turn, welcome) => `DRL ${drl}% · เลี้ยว ${turn}% · ${welcome}`,
+    profileSaved:'เก็บโปรไฟล์ในเบราว์เซอร์แล้ว', profilePreview:'กำลังทดลองโปรไฟล์',
+    profileSaveFailed:'เบราว์เซอร์นี้ไม่อนุญาตให้เก็บโปรไฟล์',
     livePreview:'พรีวิวไฟ', previewHint:'เลือกโหมดเพื่อทดลองไฟทันที',
     drl:'DRL', left:'ซ้าย', right:'ขวา', hazard:'ฉุกเฉิน', fade:'เฟด', animation:'Welcome',
     leftLight:'ไฟซ้าย', rightLight:'ไฟขวา', liveChanges:'ส่งค่าขณะเลื่อน',
@@ -61,7 +75,16 @@ const translations = {
     noDevice:'ต้องเชื่อมต่อบอร์ดก่อนจึงจะพรีวิวไฟจริงได้'
   },
   en: {
-    language:'Language', motorcycleLights:'Motorcycle front lights', curveAccessible:'Editable brightness curve',
+    language:'Language', motorcycleLights:'Simulated motorcycle front lights', curveAccessible:'Editable brightness curve',
+    visualSimulation:'Light simulation • not live board status',
+    myProfiles:'My lighting profiles', profilesLocal:'Saved in this browser',
+    profilesHint:'Tap Preview to load the settings and see DRL immediately. Adjust settings below, then save them to a profile.',
+    profileDay:'Day ride', profileNight:'Night ride', profileRain:'Rain ride',
+    previewProfile:'▶ Preview', saveProfile:'Save current settings',
+    profileDeviceHint:'Profile preview stays on screen and sends no board command. Use a mode button for a live light preview, or Save to device below.',
+    profileSummary:(drl, turn, welcome) => `DRL ${drl}% · Turn ${turn}% · ${welcome}`,
+    profileSaved:'Profile saved in this browser', profilePreview:'Previewing profile',
+    profileSaveFailed:'This browser could not save the profile',
     livePreview:'Live lighting preview', previewHint:'Choose a mode to preview the lights',
     drl:'DRL', left:'Left', right:'Right', hazard:'Hazard', fade:'Fade', animation:'Welcome',
     leftLight:'Left light', rightLight:'Right light', liveChanges:'Send live changes',
@@ -123,12 +146,29 @@ function storedCurve() {
   } catch {}
   return defaultCurve.slice();
 }
+function validProfile(raw, fallback) {
+  if (!raw || typeof raw !== 'object') return {...fallback, curve:fallback.curve.slice()};
+  const percent = key => Number.isFinite(raw[key]) && raw[key] >= 0 && raw[key] <= 100 ? Math.round(raw[key]) : fallback[key];
+  return {
+    drl:percent('drl'), turn:percent('turn'), opposite:percent('opposite'),
+    fade:Number.isFinite(raw.fade) && raw.fade >= 100 && raw.fade <= 5000 ? Math.round(raw.fade / 100) * 100 : fallback.fade,
+    welcome:['fade-in','pulse','flash','custom'].includes(raw.welcome) ? raw.welcome : fallback.welcome,
+    curve:Array.isArray(raw.curve) && raw.curve.length === 6 && raw.curve.every(value => Number.isFinite(value) && value >= 0 && value <= 100)
+      ? raw.curve.slice() : fallback.curve.slice()
+  };
+}
+function storedProfiles() {
+  let saved = {};
+  try { saved = JSON.parse(localStorage.getItem('piskraft-profiles')) || {}; } catch {}
+  return Object.fromEntries(Object.entries(defaultProfiles).map(([key, fallback]) => [key, validProfile(saved[key], fallback)]));
+}
 
 const state = {
   language: storedLanguage(), device: null, server: null, rx: null, tx: null,
   connected: false, connecting: false, queue: Promise.resolve(), epoch: 0,
   mode: 'DRL', setting: 'drl', welcome: 'fade-in', curve: storedCurve(),
-  selectedPoint: 0, previewTimer: null, welcomeRun: 0, config: null
+  selectedPoint: 0, previewTimer: null, welcomeRun: 0, visualTimer: null, blinkOn: true,
+  profiles: storedProfiles(), activeProfile: null, config: null
 };
 const logLines = [];
 const tr = key => translations[state.language][key] || key;
@@ -161,6 +201,7 @@ function setLanguage(language) {
   document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = tr(el.dataset.i18n); });
   document.querySelectorAll('[data-i18n-aria]').forEach(el => { el.setAttribute('aria-label', tr(el.dataset.i18nAria)); });
   connectionUI();
+  renderProfiles();
   try { localStorage.setItem('piskraft-language', state.language); } catch {}
 }
 
@@ -293,8 +334,8 @@ function previewCommand(mode, brightness) {
 function preview() {
   if (state.mode === 'ANIMATION') return previewWelcome();
   stopWelcome();
-  updateLights();
-  return send(previewCommand(state.mode));
+  startVisualMode();
+  return state.connected ? send(previewCommand(state.mode)) : Promise.resolve(true);
 }
 function schedulePreview() {
   if (!$('live').checked) return;
@@ -304,10 +345,15 @@ function schedulePreview() {
 function cancelPreview() {
   clearTimeout(state.previewTimer);
   stopWelcome();
+  clearInterval(state.visualTimer);
+  state.visualTimer = null;
   updateLights(0, 0);
-  return send('CANCEL');
+  return state.connected ? send('CANCEL') : Promise.resolve(true);
 }
 function selectMode(mode, shouldPreview = true) {
+  clearInterval(state.visualTimer);
+  state.visualTimer = null;
+  stopWelcome();
   state.mode = mode;
   if (['LEFT','RIGHT','HAZARD'].includes(mode)) selectSetting('turn');
   else if (mode === 'ANIMATION') selectSetting('welcome');
@@ -317,8 +363,8 @@ function selectMode(mode, shouldPreview = true) {
     button.classList.toggle('active', selected);
     button.setAttribute('aria-pressed', String(selected));
   });
-  updateLights();
   if (shouldPreview) preview();
+  else updateLights();
 }
 function selectSetting(setting) {
   state.setting = setting;
@@ -344,14 +390,44 @@ function updateLights(left, right) {
   const turn = Number($('turnBrightness').value);
   const other = Number($('opposite').value);
   const levels = {
-    DRL:[drl,drl], LEFT:[turn,other], RIGHT:[other,turn],
-    HAZARD:[turn,turn], FADE:[drl,drl], ANIMATION:[drl,drl]
+    DRL:[drl,drl], LEFT:[state.blinkOn ? turn : 0,other], RIGHT:[other,state.blinkOn ? turn : 0],
+    HAZARD:[state.blinkOn ? turn : 0,state.blinkOn ? turn : 0], FADE:[drl,drl], ANIMATION:[drl,drl]
   };
   [left,right] = left == null ? levels[state.mode] : [left,right];
   for (const [id, value] of [['leftLight',left],['rightLight',right]]) {
     $(id + 'Value').textContent = Math.round(value) + '%';
     $(id).querySelectorAll('i').forEach((segment, index) => segment.classList.toggle('on', index < Math.round(value * 12 / 100)));
   }
+  for (const [id, side, value, signal] of [
+    ['leftBeam','left',left,['LEFT','HAZARD'].includes(state.mode)],
+    ['rightBeam','right',right,['RIGHT','HAZARD'].includes(state.mode)]
+  ]) {
+    for (const beam of [$(id), ...document.querySelectorAll(`[data-beam="${side}"]`)]) {
+      beam.style.opacity = String(0.06 + clamp(value, 0, 100) * 0.0094);
+      beam.style.fill = signal ? '#ff9d22' : '#f7f3e7';
+      beam.style.filter = signal ? 'drop-shadow(0 0 12px #ff982b)' : 'drop-shadow(0 0 12px #fff6d5)';
+    }
+  }
+}
+function startVisualMode() {
+  clearInterval(state.visualTimer);
+  state.visualTimer = null;
+  state.blinkOn = true;
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) { updateLights(); return; }
+  if (['LEFT','RIGHT','HAZARD'].includes(state.mode)) {
+    updateLights();
+    state.visualTimer = setInterval(() => { state.blinkOn = !state.blinkOn; updateLights(); }, 460);
+  } else if (state.mode === 'FADE') {
+    const started = performance.now();
+    const duration = Number($('fadeDuration').value);
+    updateLights(0, 0);
+    state.visualTimer = setInterval(() => {
+      const progress = Math.min(1, (performance.now() - started) / duration);
+      const level = Number($('drl').value) * progress;
+      updateLights(level, level);
+      if (progress === 1) { clearInterval(state.visualTimer); state.visualTimer = null; }
+    }, 50);
+  } else updateLights();
 }
 function updateValues() {
   $('drlNumber').textContent = $('drl').value + '%';
@@ -376,15 +452,16 @@ function welcomeValue(time) {
 }
 async function previewWelcome() {
   clearTimeout(state.previewTimer);
+  clearInterval(state.visualTimer);
+  state.visualTimer = null;
   const run = ++state.welcomeRun;
   const mode = state.welcome === 'custom' ? 'CUSTOM' : 'ANIMATION';
-  if (!state.connected) { toast(tr('noDevice')); return false; }
   const start = performance.now();
   while (run === state.welcomeRun) {
     const elapsed = Math.min(5, (performance.now() - start) / 1000);
     const brightness = clamp(Math.round(welcomeValue(elapsed)), 0, 100);
     updateLights(brightness, brightness);
-    if (!await send('PREVIEW,' + mode + ',' + brightness)) return false;
+    if (state.connected && !await send('PREVIEW,' + mode + ',' + brightness)) return false;
     if (elapsed >= 5) break;
     await delay(250);
   }
@@ -422,23 +499,73 @@ function movePoint(event) {
   state.curve[state.selectedPoint] = clamp(Math.round((167 - local.y) / 1.52), 0, 100);
   drawCurve();
   saveCurveLocally();
+  markProfileEdited();
+}
+function renderProfiles() {
+  for (const [key, profile] of Object.entries(state.profiles)) {
+    const welcomeName = tr({ 'fade-in':'fadeIn', pulse:'pulse', flash:'flash', custom:'custom' }[profile.welcome]);
+    $(key + 'ProfileSummary').textContent = tr('profileSummary')(profile.drl, profile.turn, welcomeName);
+    document.querySelector(`[data-profile="${key}"]`).classList.toggle('active', key === state.activeProfile);
+  }
+}
+function markProfileEdited() {
+  state.activeProfile = null;
+  renderProfiles();
+}
+function currentProfile() {
+  return {
+    drl:Number($('drl').value), turn:Number($('turnBrightness').value), opposite:Number($('opposite').value),
+    fade:Number($('fadeDuration').value), welcome:state.welcome, curve:state.curve.slice()
+  };
+}
+function previewProfile(key) {
+  const profile = state.profiles[key];
+  if (!profile) return;
+  $('drl').value = profile.drl;
+  $('turnBrightness').value = profile.turn;
+  $('opposite').value = profile.opposite;
+  $('fadeDuration').value = profile.fade;
+  state.curve = profile.curve.slice();
+  selectWelcome(profile.welcome);
+  drawCurve();
+  updateValues();
+  state.activeProfile = key;
+  renderProfiles();
+  selectMode('DRL', false);
+  startVisualMode();
+  $('previewTitle').scrollIntoView({behavior:matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block:'start'});
+  toast(tr('profilePreview') + ': ' + tr({day:'profileDay', night:'profileNight', rain:'profileRain'}[key]));
+}
+function saveProfile(key) {
+  if (!state.profiles[key]) return;
+  const previous = state.profiles[key];
+  state.profiles[key] = currentProfile();
+  try { localStorage.setItem('piskraft-profiles', JSON.stringify(state.profiles)); }
+  catch { state.profiles[key] = previous; toast(tr('profileSaveFailed')); return; }
+  state.activeProfile = key;
+  renderProfiles();
+  toast(tr('profileSaved') + ': ' + tr({day:'profileDay', night:'profileNight', rain:'profileRain'}[key]));
 }
 
 document.querySelectorAll('.segments').forEach(container => {
   for (let i = 0; i < 12; i++) container.appendChild(document.createElement('i'));
 });
 document.querySelectorAll('[data-mode]').forEach(button => button.addEventListener('click', () => selectMode(button.dataset.mode)));
+document.querySelectorAll('[data-profile-preview]').forEach(button => button.addEventListener('click', () => previewProfile(button.dataset.profilePreview)));
+document.querySelectorAll('[data-profile-save]').forEach(button => button.addEventListener('click', () => saveProfile(button.dataset.profileSave)));
 document.querySelectorAll('[data-setting]').forEach(button => button.addEventListener('click', () => selectSetting(button.dataset.setting)));
 document.querySelectorAll('[data-welcome]').forEach(button => button.addEventListener('click', () => {
   selectWelcome(button.dataset.welcome);
+  markProfileEdited();
   selectMode('ANIMATION', false);
-  if (state.connected) previewWelcome();
+  previewWelcome();
 }));
 for (const id of ['drl','turnBrightness','opposite','fadeDuration']) {
-  $(id).addEventListener('input', () => { updateValues(); if (id !== 'fadeDuration') schedulePreview(); });
+  $(id).addEventListener('input', () => { markProfileEdited(); updateValues(); if (id !== 'fadeDuration') schedulePreview(); });
 }
 document.querySelectorAll('[data-preset]').forEach(button => button.addEventListener('click', () => {
   $('drl').value = button.dataset.preset;
+  markProfileEdited();
   updateValues();
   selectMode('DRL');
 }));
@@ -495,11 +622,13 @@ $('pointValue').addEventListener('input', event => {
   state.curve[state.selectedPoint] = Number(event.target.value);
   drawCurve();
   saveCurveLocally();
+  markProfileEdited();
 });
 $('resetCurveBtn').addEventListener('click', () => {
   state.curve = defaultCurve.slice();
   drawCurve();
   saveCurveLocally();
+  markProfileEdited();
 });
 drawCurve();
 updateValues();

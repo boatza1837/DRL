@@ -14,13 +14,37 @@
       <div class="brand"><div class="logo" aria-hidden="true">✦</div><div><strong>PISKRAFT</strong><small>LIGHT CONTROL SYSTEM</small></div></div>
       <label class="language"><span data-i18n="language">ภาษา</span><select id="language"><option value="th">ไทย</option><option value="en">English</option></select></label>
     </header>
-    <div class="hero"><div class="overline">WIRELESS LIGHTING SYSTEM · V1.1</div><div class="hero-title">Ride in <span>light.</span></div><div class="bike"><svg viewBox="0 0 420 130" role="img" aria-label="Motorcycle front lights" data-i18n-aria="motorcycleLights"><defs><linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#48627b"/><stop offset="1" stop-color="#162435"/></linearGradient></defs><path d="M111 104 L145 36 Q211 9 277 36 L307 104 L260 116 L236 76 H185 L160 116Z" fill="url(#metal)" stroke="#47627c" stroke-width="2"/><path d="M148 40 L201 17 L220 17 L271 40 L245 48 H174Z" fill="#182638" stroke="#5c7186"/><path d="M160 58 L200 49 L185 73 L134 85Z" class="glow"/><path d="M260 58 L220 49 L235 73 L286 85Z" class="glow"/><path d="M195 80 L225 80 L235 117 L186 117Z" fill="#0a111c" stroke="#46576b"/><path d="M112 104 L70 117 M307 104 L352 117" stroke="#64768b" stroke-width="5" stroke-linecap="round"/></svg></div><div class="hero-footer">ESP32 • BLE CONTROLLER</div></div>
+    <div class="hero"><div class="overline">WIRELESS LIGHTING SYSTEM · V1.1</div><div class="hero-title">Ride in <span>light.</span></div><div class="bike"><svg viewBox="0 0 420 130" role="img" aria-label="Motorcycle front lights" data-i18n-aria="motorcycleLights"><defs><linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#48627b"/><stop offset="1" stop-color="#162435"/></linearGradient></defs><path d="M111 104 L145 36 Q211 9 277 36 L307 104 L260 116 L236 76 H185 L160 116Z" fill="url(#metal)" stroke="#47627c" stroke-width="2"/><path d="M148 40 L201 17 L220 17 L271 40 L245 48 H174Z" fill="#182638" stroke="#5c7186"/><path id="leftBeam" d="M160 58 L200 49 L185 73 L134 85Z" class="glow"/><path id="rightBeam" d="M260 58 L220 49 L235 73 L286 85Z" class="glow"/><path d="M195 80 L225 80 L235 117 L186 117Z" fill="#0a111c" stroke="#46576b"/><path d="M112 104 L70 117 M307 104 L352 117" stroke="#64768b" stroke-width="5" stroke-linecap="round"/></svg></div><div class="hero-footer" data-i18n="visualSimulation">ภาพจำลองไฟ • ไม่ใช่สถานะจริงจากบอร์ด</div></div>
     <div class="status"><div class="status-icon" aria-hidden="true">ᛒ</div><div class="status-copy"><strong id="deviceName">ยังไม่เชื่อมต่ออุปกรณ์</strong><small id="deviceDetails">ต้องเชื่อมต่อ Bluetooth</small></div><button class="connect" id="connectBtn">เชื่อมต่อ</button></div>
+
+    <section aria-labelledby="profilesTitle">
+      <div class="section-header"><h2 id="profilesTitle" data-i18n="myProfiles">โปรไฟล์ไฟส่วนตัว</h2><span data-i18n="profilesLocal">เก็บในเบราว์เซอร์นี้</span></div>
+      <div class="panel stack">
+        <p class="sub" data-i18n="profilesHint">แตะทดลองเพื่อโหลดค่าและดูไฟ DRL ทันที ปรับค่าด้านล่างแล้วบันทึกทับโปรไฟล์ได้</p>
+        <div class="profile-list">
+          <div class="profile-card" data-profile="day"><div class="profile-heading"><strong data-i18n="profileDay">ขี่กลางวัน</strong><small id="dayProfileSummary"></small></div><div class="profile-actions"><button class="btn primary" data-profile-preview="day" data-i18n="previewProfile">▶ ทดลอง</button><button class="btn" data-profile-save="day" data-i18n="saveProfile">เก็บค่าปัจจุบัน</button></div></div>
+          <div class="profile-card" data-profile="night"><div class="profile-heading"><strong data-i18n="profileNight">ขี่กลางคืน</strong><small id="nightProfileSummary"></small></div><div class="profile-actions"><button class="btn primary" data-profile-preview="night" data-i18n="previewProfile">▶ ทดลอง</button><button class="btn" data-profile-save="night" data-i18n="saveProfile">เก็บค่าปัจจุบัน</button></div></div>
+          <div class="profile-card" data-profile="rain"><div class="profile-heading"><strong data-i18n="profileRain">ขี่ฝนตก</strong><small id="rainProfileSummary"></small></div><div class="profile-actions"><button class="btn primary" data-profile-preview="rain" data-i18n="previewProfile">▶ ทดลอง</button><button class="btn" data-profile-save="rain" data-i18n="saveProfile">เก็บค่าปัจจุบัน</button></div></div>
+        </div>
+        <p class="sub" data-i18n="profileDeviceHint">ทดลองโปรไฟล์บนจอเท่านั้น ไม่ส่งคำสั่งไปบอร์ด กดพรีวิวโหมดเพื่อทดลองกับไฟจริง หรือบันทึกลงบอร์ดด้านล่าง</p>
+      </div>
+    </section>
 
     <section aria-labelledby="previewTitle">
       <div class="section-header"><h2 id="previewTitle" data-i18n="livePreview">พรีวิวไฟ</h2><span id="topState">ออฟไลน์</span></div>
       <div class="panel stack">
         <p class="sub" data-i18n="previewHint">เลือกโหมดเพื่อทดลองไฟทันที</p>
+        <div class="vehicle-preview">
+          <svg viewBox="0 0 420 130" role="img" aria-label="ภาพจำลองไฟหน้ารถจักรยานยนต์" data-i18n-aria="motorcycleLights">
+            <path d="M111 104 L145 36 Q211 9 277 36 L307 104 L260 116 L236 76 H185 L160 116Z" fill="#22364a" stroke="#587088" stroke-width="2"/>
+            <path d="M148 40 L201 17 L220 17 L271 40 L245 48 H174Z" fill="#182638" stroke="#5c7186"/>
+            <path d="M160 58 L200 49 L185 73 L134 85Z" class="glow" data-beam="left"/>
+            <path d="M260 58 L220 49 L235 73 L286 85Z" class="glow" data-beam="right"/>
+            <path d="M195 80 L225 80 L235 117 L186 117Z" fill="#0a111c" stroke="#46576b"/>
+            <path d="M112 104 L70 117 M307 104 L352 117" stroke="#64768b" stroke-width="5" stroke-linecap="round"/>
+          </svg>
+          <small data-i18n="visualSimulation">ภาพจำลองไฟ • ไม่ใช่สถานะจริงจากบอร์ด</small>
+        </div>
         <div class="modes" id="modes">
           <button class="mode active" data-mode="DRL" aria-pressed="true"><span class="symbol">☀</span><span data-i18n="drl">DRL</span></button>
           <button class="mode" data-mode="LEFT" aria-pressed="false"><span class="symbol">⇦</span><span data-i18n="left">ซ้าย</span></button>

@@ -8,6 +8,8 @@ Mobile-first Web Bluetooth controller for the PISKRAFT DRL ESP32 board.
 - Connect to `PISKRAFT_DIM` while the motorcycle is parked.
 - The page is a single scrollable view. DRL, turn-signal, and Welcome settings are grouped below the live preview.
 - Choose Thai or English from the language selector. The choice is saved in this browser.
+- Day, Night, and Rain lighting profiles start with editable values. Tap Preview to load a profile and simulate its DRL setting locally without sending a BLE command; use the mode buttons to see its turn signals or Welcome pattern. Save current settings to a profile to keep them in this browser. This does not write to the board.
+- The motorcycle diagram in the live preview animates left/right/hazard signals, DRL fade, and Welcome. The diagram and light bars also work without a Bluetooth connection. They show requested values, not measured light or board state.
 
 ## BLE behavior
 
