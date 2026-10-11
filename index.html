@@ -4,35 +4,89 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#090d16">
-  <meta name="description" content="PISKRAFT DRL — wireless motorcycle lighting controller">
+  <meta name="description" content="PISKRAFT DRL Bluetooth lighting controller">
   <title>PISKRAFT • Light Control</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <main class="app">
-    <header class="top"><div class="brand"><div class="logo">✦</div><div><strong>PISKRAFT</strong><small>LIGHT CONTROL SYSTEM</small></div></div><div class="top-right"><span class="pulse" id="dot"></span><span id="topState">OFFLINE</span></div></header>
-    <div class="hero"><div class="overline">WIRELESS LIGHTING SYSTEM · V1.0</div><div class="hero-title">Ride in <span>light.</span></div><div class="bike"><svg viewBox="0 0 420 130" role="img" aria-label="stylized motorcycle front lighting"><defs><linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#48627b"/><stop offset="1" stop-color="#162435"/></linearGradient></defs><path d="M111 104 L145 36 Q211 9 277 36 L307 104 L260 116 L236 76 H185 L160 116Z" fill="url(#metal)" stroke="#47627c" stroke-width="2"/><path d="M148 40 L201 17 L220 17 L271 40 L245 48 H174Z" fill="#182638" stroke="#5c7186"/><path d="M160 58 L200 49 L185 73 L134 85Z" class="glow"/><path d="M260 58 L220 49 L235 73 L286 85Z" class="glow"/><path d="M195 80 L225 80 L235 117 L186 117Z" fill="#0a111c" stroke="#46576b"/><path d="M112 104 L70 117 M307 104 L352 117" stroke="#64768b" stroke-width="5" stroke-linecap="round"/></svg></div><div class="hero-footer">ESP32 • BLE CONTROLLER</div></div>
-    <div class="status"><div class="status-icon">ᛒ</div><div><strong id="deviceName">Device not connected</strong><small id="deviceDetails">Bluetooth connection required</small></div><button class="connect" id="connectBtn">Connect</button></div>
+    <header class="top">
+      <div class="brand"><div class="logo" aria-hidden="true">✦</div><div><strong>PISKRAFT</strong><small>LIGHT CONTROL SYSTEM</small></div></div>
+      <label class="language"><span data-i18n="language">ภาษา</span><select id="language"><option value="th">ไทย</option><option value="en">English</option></select></label>
+    </header>
+    <div class="hero"><div class="overline">WIRELESS LIGHTING SYSTEM · V1.1</div><div class="hero-title">Ride in <span>light.</span></div><div class="bike"><svg viewBox="0 0 420 130" role="img" aria-label="Motorcycle front lights" data-i18n-aria="motorcycleLights"><defs><linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#48627b"/><stop offset="1" stop-color="#162435"/></linearGradient></defs><path d="M111 104 L145 36 Q211 9 277 36 L307 104 L260 116 L236 76 H185 L160 116Z" fill="url(#metal)" stroke="#47627c" stroke-width="2"/><path d="M148 40 L201 17 L220 17 L271 40 L245 48 H174Z" fill="#182638" stroke="#5c7186"/><path d="M160 58 L200 49 L185 73 L134 85Z" class="glow"/><path d="M260 58 L220 49 L235 73 L286 85Z" class="glow"/><path d="M195 80 L225 80 L235 117 L186 117Z" fill="#0a111c" stroke="#46576b"/><path d="M112 104 L70 117 M307 104 L352 117" stroke="#64768b" stroke-width="5" stroke-linecap="round"/></svg></div><div class="hero-footer">ESP32 • BLE CONTROLLER</div></div>
+    <div class="status"><div class="status-icon" aria-hidden="true">ᛒ</div><div class="status-copy"><strong id="deviceName">ยังไม่เชื่อมต่ออุปกรณ์</strong><small id="deviceDetails">ต้องเชื่อมต่อ Bluetooth</small></div><button class="connect" id="connectBtn">เชื่อมต่อ</button></div>
 
-    <section id="controlPage" class="page active">
-      <div class="section-header"><h2>Light controls</h2><span>Live preview</span></div>
-      <div class="panel"><div class="control-heading"><h3>DRL brightness</h3><div class="amount"><span id="drlNumber">50</span><span class="unit">%</span></div></div><input type="range" id="drl" min="0" max="100" value="50"><div class="range-ends"><span>OFF · 0%</span><span>MAX · 100%</span></div></div>
-      <div class="section-header"><h2>Lighting modes</h2><span>Tap to preview</span></div>
-      <div class="modes" id="modes"><button class="mode active" data-mode="DRL"><span class="symbol">☀</span>DRL</button><button class="mode" data-mode="LEFT"><span class="symbol">⇦</span>Left turn</button><button class="mode" data-mode="RIGHT"><span class="symbol">⇨</span>Right turn</button><button class="mode" data-mode="HAZARD"><span class="symbol">⚠</span>Hazard</button><button class="mode" data-mode="FADE"><span class="symbol">◐</span>Fade</button><button class="mode" data-mode="ANIMATION"><span class="symbol">✦</span>Animation</button></div>
-      <div class="section-header"><h2>Preview settings</h2><span>Unsaved</span></div>
-      <div class="panel stack"><div class="control-heading" style="margin:0"><h3>Opposite-side brightness</h3><div class="amount"><span id="oppositeNumber">50</span><span class="unit">%</span></div></div><div class="sub">Brightness of the other side during left/right signal preview</div><input type="range" id="opposite" min="0" max="100" value="50"><div class="range-ends"><span>0%</span><span>100%</span></div><div class="switchline"><div><strong>Send live changes</strong><small>Automatically preview slider changes</small></div><label class="switch"><input type="checkbox" id="live" checked><i></i></label></div><div class="row"><button class="btn primary" id="previewBtn">▶ Preview selected</button><button class="btn ghost" id="cancelBtn">■ Stop preview</button></div></div>
-      <div class="notice">Preview commands are temporary. Activating a real turn signal may restore your stored configuration, as observed on the PISKRAFT board.</div>
+    <section aria-labelledby="previewTitle">
+      <div class="section-header"><h2 id="previewTitle" data-i18n="livePreview">พรีวิวไฟ</h2><span id="topState">ออฟไลน์</span></div>
+      <div class="panel stack">
+        <p class="sub" data-i18n="previewHint">เลือกโหมดเพื่อทดลองไฟทันที</p>
+        <div class="modes" id="modes">
+          <button class="mode active" data-mode="DRL" aria-pressed="true"><span class="symbol">☀</span><span data-i18n="drl">DRL</span></button>
+          <button class="mode" data-mode="LEFT" aria-pressed="false"><span class="symbol">⇦</span><span data-i18n="left">ซ้าย</span></button>
+          <button class="mode" data-mode="RIGHT" aria-pressed="false"><span class="symbol">⇨</span><span data-i18n="right">ขวา</span></button>
+          <button class="mode" data-mode="HAZARD" aria-pressed="false"><span class="symbol">⚠</span><span data-i18n="hazard">ฉุกเฉิน</span></button>
+          <button class="mode" data-mode="FADE" aria-pressed="false"><span class="symbol">◐</span><span data-i18n="fade">เฟด</span></button>
+          <button class="mode" data-mode="ANIMATION" aria-pressed="false"><span class="symbol">✦</span><span data-i18n="animation">Welcome</span></button>
+        </div>
+        <div class="light-preview" aria-hidden="true">
+          <div class="light-row"><div class="light-row-label"><span data-i18n="leftLight">ไฟซ้าย</span><strong id="leftLightValue">50%</strong></div><div class="segments" id="leftLight"></div></div>
+          <div class="light-row"><div class="light-row-label"><span data-i18n="rightLight">ไฟขวา</span><strong id="rightLightValue">50%</strong></div><div class="segments" id="rightLight"></div></div>
+        </div>
+        <label class="switchline"><span><strong data-i18n="liveChanges">ส่งค่าขณะเลื่อน</strong><small data-i18n="liveChangesHint">พรีวิวการปรับสไลเดอร์อัตโนมัติ</small></span><span class="switch"><input type="checkbox" id="live" checked><i></i></span></label>
+        <div class="row"><button class="btn primary" id="previewBtn" data-i18n="previewSelected">▶ พรีวิวที่เลือก</button><button class="btn ghost" id="cancelBtn" data-i18n="stopPreview">■ หยุดพรีวิว</button></div>
+      </div>
     </section>
 
-    <section id="presetsPage" class="page"><div class="section-header"><h2>Quick presets</h2><span>Preview only</span></div><div class="preset-grid"><button class="btn preset" data-preset="0"><strong>🌙 Night</strong><small>DRL 25%</small></button><button class="btn preset" data-preset="1"><strong>☀ Daylight</strong><small>DRL 100%</small></button><button class="btn preset" data-preset="2"><strong>✦ Balanced</strong><small>DRL 60%</small></button><button class="btn preset" data-preset="3"><strong>◯ Off</strong><small>DRL 0%</small></button></div><div class="section-header"><h2>Original preset protocol</h2><span>From APK</span></div><div class="panel stack"><p class="sub" style="margin:0">The original Android app supports named previews via <code>PREVIEW,PRESET,…</code>. Enter an identifier only when you know one supported by your firmware.</p><div class="field"><label for="presetId">Preset identifier</label><input type="number" id="presetId" value="1" min="0" max="255"></div><button class="btn" id="previewPresetBtn">Try original preset</button></div></section>
+    <section aria-labelledby="settingsTitle">
+      <div class="section-header"><h2 id="settingsTitle" data-i18n="lightingSettings">ตั้งค่าไฟ</h2><span data-i18n="chooseSection">เลือกหมวดด้านล่าง</span></div>
+      <div class="setting-tabs" role="tablist" aria-labelledby="settingsTitle">
+        <button id="drlTab" class="active" role="tab" aria-selected="true" aria-controls="drlPanel" data-setting="drl" data-i18n="drl">DRL</button>
+        <button id="turnTab" role="tab" aria-selected="false" aria-controls="turnPanel" data-setting="turn" data-i18n="turn">ไฟเลี้ยว</button>
+        <button id="welcomeTab" role="tab" aria-selected="false" aria-controls="welcomePanel" data-setting="welcome" data-i18n="welcome">Welcome</button>
+      </div>
+      <div class="panel stack setting-panel" id="drlPanel" role="tabpanel" aria-labelledby="drlTab">
+        <h3 data-i18n="drlSettings">ตั้งค่า DRL</h3>
+        <div class="field"><label for="drl"><span data-i18n="drlBrightness">ความสว่าง DRL</span> <strong class="value" id="drlNumber">50%</strong></label><input type="range" id="drl" min="0" max="100" value="50"><div class="range-ends"><span>0%</span><span>100%</span></div></div>
+        <div class="field"><label for="fadeDuration"><span data-i18n="fadeDuration">เวลาเฟด DRL</span> <strong class="value" id="fadeNumber">1.3 s</strong></label><input type="range" id="fadeDuration" min="100" max="5000" step="100" value="1300"><p class="sub" data-i18n="fadeExplanation">ค่าเฟดนี้อยู่ในหมวด DRL ของ APK ไม่ใช่จังหวะไฟเลี้ยว ผลตอนปิดไฟยังต้องทดสอบกับบอร์ด</p></div>
+        <div class="section-header compact"><h3 data-i18n="quickPresets">ค่าความสว่างสำเร็จรูป</h3><span data-i18n="previewOnly">พรีวิวเท่านั้น</span></div>
+        <div class="preset-grid"><button class="btn preset" data-preset="25"><strong data-i18n="night">กลางคืน</strong><small>25%</small></button><button class="btn preset" data-preset="100"><strong data-i18n="daylight">กลางวัน</strong><small>100%</small></button><button class="btn preset" data-preset="60"><strong data-i18n="balanced">สมดุล</strong><small>60%</small></button><button class="btn preset" data-preset="0"><strong data-i18n="off">ปิด</strong><small>0%</small></button></div>
+      </div>
+      <div class="panel stack setting-panel hidden" id="turnPanel" role="tabpanel" aria-labelledby="turnTab">
+        <h3 data-i18n="turnSettings">ตั้งค่าไฟเลี้ยว</h3>
+        <div class="field"><label for="turnBrightness"><span data-i18n="turnBrightness">ความสว่างไฟเลี้ยว</span> <strong class="value" id="turnNumber">100%</strong></label><input type="range" id="turnBrightness" min="0" max="100" value="100"><p class="sub" data-i18n="turnPreviewOnly">ค่านี้ใช้กับพรีวิวเท่านั้น แอปเดิมไม่มีคำสั่งบันทึกค่านี้แยกต่างหาก</p></div>
+        <div class="field"><label for="opposite"><span data-i18n="oppositeBrightness">DRL ฝั่งตรงข้าม</span> <strong class="value" id="oppositeNumber">50%</strong></label><input type="range" id="opposite" min="0" max="100" value="50"><p class="sub" data-i18n="oppositeHint">ความสว่างของอีกฝั่งขณะเปิดไฟเลี้ยวซ้ายหรือขวา</p></div>
+        <div class="row"><button class="btn" id="leftPreviewBtn" data-i18n="previewLeft">⇦ ทดลองซ้าย</button><button class="btn" id="rightPreviewBtn" data-i18n="previewRight">ทดลองขวา ⇨</button><button class="btn" id="hazardPreviewBtn" data-i18n="previewHazard">⚠ ฉุกเฉิน</button></div>
+      </div>
+      <div class="panel stack setting-panel hidden" id="welcomePanel" role="tabpanel" aria-labelledby="welcomeTab">
+        <h3 data-i18n="welcomeSettings">ไฟต้อนรับตอนเปิดเครื่อง</h3>
+        <p class="sub" data-i18n="welcomeHint">เลือกแบบ 1–3 เพื่อบันทึกลงบอร์ด แบบ 4 ใช้กราฟพรีวิวจากเว็บ</p>
+        <div class="welcome-grid">
+          <button class="welcome-option active" data-welcome="fade-in" aria-pressed="true"><span class="welcome-index">1</span><strong data-i18n="fadeIn">ค่อย ๆ สว่าง</strong><small data-i18n="fadeInHint">สว่างขึ้นอย่างนุ่มนวล</small></button>
+          <button class="welcome-option" data-welcome="pulse" aria-pressed="false"><span class="welcome-index">2</span><strong data-i18n="pulse">เต้นเป็นจังหวะ</strong><small data-i18n="pulseHint">สว่างและหรี่เป็นจังหวะ</small></button>
+          <button class="welcome-option" data-welcome="flash" aria-pressed="false"><span class="welcome-index">3</span><strong data-i18n="flash">กะพริบ</strong><small data-i18n="flashHint">กะพริบก่อนสว่างค้าง</small></button>
+          <button class="welcome-option" data-welcome="custom" aria-pressed="false"><span class="welcome-index">4</span><strong data-i18n="custom">กำหนดเอง</strong><small data-i18n="customHint">วาดกราฟความสว่าง</small></button>
+        </div>
+        <div id="curveEditor" class="curve-editor hidden">
+          <div class="curve-heading"><strong data-i18n="curveTitle">กราฟความสว่าง</strong><span data-i18n="curveAxes">เวลา 0–5 วินาที · ความสว่าง 0–100%</span></div>
+          <svg id="curveSvg" viewBox="0 0 340 190" role="img" aria-label="Editable brightness curve" data-i18n-aria="curveAccessible"><path class="grid-line" d="M30 15H325M30 53H325M30 91H325M30 129H325M30 167H325M30 15V167M89 15V167M148 15V167M207 15V167M266 15V167M325 15V167"/><polyline id="curveLine" points=""/><g id="curvePoints"></g><text x="30" y="184">0s</text><text x="303" y="184">5s</text><text x="2" y="20">100</text><text x="13" y="170">0</text></svg>
+          <label for="pointValue"><span data-i18n="pointBrightness">ความสว่างที่จุด</span> <span id="pointTime">0s</span> <strong class="value" id="pointNumber">0%</strong></label>
+          <input type="range" id="pointValue" min="0" max="100" value="0">
+          <p class="sub" data-i18n="curveHow">แตะจุดบนกราฟแล้วลากขึ้นลง หรือใช้สไลเดอร์ด้านล่าง</p>
+          <button class="btn" id="resetCurveBtn" data-i18n="resetCurve">คืนค่ากราฟเริ่มต้น</button>
+          <p class="notice" data-i18n="customLimit">APK เดิมพรีวิวกราฟด้วยการส่งค่าหลายครั้ง แต่ไม่มีคำสั่งบันทึกกราฟลงบอร์ด จึงยังไม่สามารถบันทึกแบบ 4 ให้ทำงานตอนเปิดเครื่องได้</p>
+        </div>
+        <button class="btn" id="previewWelcomeBtn" data-i18n="previewWelcome">▶ ทดลอง Welcome</button>
+      </div>
+      <div class="panel stack save-panel">
+        <div class="row"><button class="btn" id="readBtn" data-i18n="readDevice">↻ อ่านค่าจากบอร์ด</button><button class="btn primary" id="saveBtn" data-i18n="saveDevice">⬆ บันทึกลงบอร์ด</button></div>
+        <p class="sub" id="saveStatus" data-i18n="saveWarning">บอร์ดต้องตอบกลับหรือทดสอบเปิดเครื่องใหม่ จึงจะยืนยันว่าบันทึกสำเร็จ</p>
+      </div>
+    </section>
 
-    <section id="settingsPage" class="page"><div class="section-header"><h2>Controller settings</h2><span>Persistent configuration</span></div><div class="panel stack"><div class="field"><label for="fadeDuration">DRL fade duration</label><select id="fadeDuration"><option value="300">300 ms</option><option value="600">600 ms</option><option value="1000">1,000 ms</option><option value="1300" selected>1,300 ms (default in app)</option><option value="2000">2,000 ms</option><option value="3000">3,000 ms</option><option value="5000">5,000 ms</option></select></div><div class="field"><label for="animation">Startup animation</label><select id="animation"><option value="0">Fade in</option><option value="1">Pulse</option><option value="2">Flash</option></select></div><div class="notice">Save Configuration will write DRL brightness, opposite-side brightness, fade duration, animation and then SAVE. These commands were extracted from the APK, but persistent save has not yet been tested on your board.</div><div class="row"><button class="btn" id="readBtn">↻ Read from device</button><button class="btn primary" id="saveBtn">⬆ Save to device</button></div></div><div class="section-header"><h2>Device maintenance</h2></div><div class="panel stack"><div class="switchline"><div><strong>Restore factory defaults</strong><small>Send the original RESET command</small></div><button class="btn danger" id="resetBtn" style="flex:0">Restore</button></div><div class="sub" style="margin:0">This can permanently replace the stored settings. Always confirm before using.</div></div></section>
-
-    <section id="diagnosticsPage" class="page"><div class="section-header"><h2>Diagnostics</h2><span>BLE monitor</span></div><div class="panel stack"><div class="field"><label>Service UUID</label><div class="help">6E400001-B5A3-F393-E0A9-E50E24DCCA9E</div></div><div class="field"><label>Write characteristic · RX</label><div class="help">6E400002-B5A3-F393-E0A9-E50E24DCCA9E</div></div><div class="field"><label>Notify characteristic · TX</label><div class="help">6E400003-B5A3-F393-E0A9-E50E24DCCA9E</div></div><div class="row"><button class="btn" id="pingBtn">Ping</button><button class="btn" id="reqBtn">Request config</button></div></div><div class="section-header"><h2>Activity log</h2><button class="badge" id="copyLogBtn" style="background:transparent">Copy log</button></div><div id="log" class="log" aria-live="polite">Ready. Connect to PISKRAFT_DIM to begin.</div><p class="help">On iPhone, open this site with a Web Bluetooth-capable browser such as Bluefy. Standard Safari generally cannot access Bluetooth. On Android, use a browser supporting Web Bluetooth, such as Chrome. Both require a secure HTTPS origin and Bluetooth permission.</p></section>
-
-    <p class="footer">PISKRAFT BLE LAB · INDEPENDENT CONTROLLER<br>Drive safely. Configure only while parked.</p>
+    <details class="panel diagnostics"><summary data-i18n="diagnostics">การเชื่อมต่อและบันทึกคำสั่ง</summary><div class="stack"><div class="row"><button class="btn" id="pingBtn">Ping</button><button class="btn" id="reqBtn" data-i18n="requestConfig">ขอค่าปัจจุบัน</button><button class="btn" id="copyLogBtn" data-i18n="copyLog">คัดลอกบันทึก</button></div><div id="log" class="log" aria-live="polite"></div><p class="help" data-i18n="browserHelp">ใช้เบราว์เซอร์ที่รองรับ Web Bluetooth ผ่าน HTTPS และตั้งค่าไฟขณะจอดรถเท่านั้น</p><button class="btn danger" id="resetBtn" data-i18n="factoryReset">คืนค่าโรงงาน</button></div></details>
+    <p class="footer" data-i18n="footer">PISKRAFT BLE LAB · ตั้งค่าไฟขณะจอดรถเท่านั้น</p>
   </main>
-  <nav class="tabbar"><button class="active" data-page="controlPage"><b>◈</b>Control</button><button data-page="presetsPage"><b>▦</b>Presets</button><button data-page="settingsPage"><b>⚙</b>Settings</button><button data-page="diagnosticsPage"><b>⌁</b>Diagnostics</button></nav>
   <div class="toast hidden" id="toast" role="status"></div>
   <script src="app.js"></script>
 </body>
