@@ -55,7 +55,7 @@ const translations = {
     welcomeDuration:'ระยะเวลากราฟ',
     pointBrightness:'ความสว่างที่จุด', curveHow:'แตะจุดบนกราฟแล้วลากขึ้นลง หรือใช้สไลเดอร์ด้านล่าง',
     resetCurve:'คืนค่ากราฟเริ่มต้น',
-    customLimit:'กราฟ 5–20 วินาทีส่งค่าพรีวิวไปบอร์ดขณะเชื่อมต่อได้ แต่ APK ไม่มีคำสั่งบันทึกจุดกราฟหรือระยะเวลาลงบอร์ด แบบนี้จึงยังทำงานเองตอนเปิดเครื่องไม่ได้หากไม่แก้เฟิร์มแวร์',
+    customLimit:'กราฟ 5–20 วินาทีพรีวิวบนบอร์ดได้ขณะเชื่อมต่อ แต่ APK ที่ตรวจไม่ส่งคำสั่งบันทึกจุดกราฟหรือระยะเวลา จึงยังบันทึกให้เล่นเองตอนเปิดเครื่องจากเว็บนี้ไม่ได้ ต้องตรวจเฟิร์มแวร์หรือทดสอบบอร์ดว่ามีคำสั่งอื่นหรือไม่',
     previewWelcome:'▶ ทดลอง Welcome', readDevice:'↻ อ่านค่าจากบอร์ด',
     saveDevice:'⬆ บันทึกลงบอร์ด',
     saveWarning:'บอร์ดต้องตอบกลับหรือทดสอบเปิดเครื่องใหม่ จึงจะยืนยันว่าบันทึกสำเร็จ',
@@ -80,7 +80,7 @@ const translations = {
     noDevice:'ยังไม่ต่อบอร์ด แสดงภาพจำลองบนจอเท่านั้น',
     liveNeedsDevice:'ต่อบอร์ดก่อนเปิด Live Preview',
     liveEnabled:'เปิด Live Preview แล้ว', liveDisabled:'ปิด Live Preview แล้ว',
-    graphCannotSave:'รูปแบบนี้เล่นบนบอร์ดขณะเชื่อมต่อได้ แต่บอร์ดยังไม่มีคำสั่งบันทึกให้เล่นเองตอนเปิดเครื่อง'
+    graphCannotSave:'รูปแบบนี้พรีวิวได้ แต่ยังไม่พบคำสั่งบันทึกให้เล่นเองตอนเปิดเครื่องใน APK ที่ตรวจ'
   },
   en: {
     language:'Language', motorcycleLights:'Simulated motorcycle front lights', curveAccessible:'Editable brightness curve',
@@ -122,7 +122,7 @@ const translations = {
     welcomeDuration:'Curve duration',
     pointBrightness:'Brightness at', curveHow:'Drag a point up or down, or use the slider below',
     resetCurve:'Reset curve',
-    customLimit:'The 5–20 second curve can stream a live preview to a connected board. The APK has no command to save keyframes or duration, so it cannot run at startup without firmware changes.',
+    customLimit:'The 5–20 second curve can preview on a connected board. The inspected APK does not send a command to save its points or duration, so this site cannot yet store it for startup. Firmware inspection or a board test may reveal another command.',
     previewWelcome:'▶ Preview Welcome', readDevice:'↻ Read from device',
     saveDevice:'⬆ Save to device',
     saveWarning:'A board response or power-cycle test is needed to confirm the settings were saved.',
@@ -147,7 +147,7 @@ const translations = {
     noDevice:'No board connected; showing the on-screen simulation only',
     liveNeedsDevice:'Connect the board before enabling Live Preview',
     liveEnabled:'Live Preview enabled', liveDisabled:'Live Preview disabled',
-    graphCannotSave:'This pattern can run while connected, but the board has no known command to store it for startup'
+    graphCannotSave:'This pattern can preview while connected, but no startup-save command was found in the inspected APK'
   }
 };
 
