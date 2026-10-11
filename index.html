@@ -106,6 +106,43 @@
       </div>
     </section>
 
+    <details class="panel tool-panel" id="selfTestDetails">
+      <summary data-i18n="selfTestTitle">ตรวจไฟทั้งคันใน 30 วินาที</summary>
+      <div class="stack tool-content">
+        <p class="sub" data-i18n="selfTestHint">เชื่อมต่อบอร์ดก่อน แล้วดูไฟจริงทีละขั้น: DRL → ซ้าย → ขวา → ฉุกเฉิน → Welcome ขั้นละ 6 วินาที ที่ความสว่างทดสอบ 70% แตะสิ่งที่เห็นเพื่อเก็บผล</p>
+        <div class="row"><button class="btn primary" id="startSelfTest" data-i18n="startSelfTest">▶ เริ่มตรวจไฟ</button><button class="btn" id="stopSelfTest" data-i18n="stopTest" disabled>■ หยุด</button></div>
+        <div class="tool-progress"><div id="testProgressBar"></div></div>
+        <strong class="tool-status" id="testStatus" aria-live="polite">พร้อมตรวจไฟ</strong>
+        <p class="sub" data-i18n="selfTestObserve">ไฟจริงออกฝั่งไหน?</p>
+        <div class="observe-grid" id="testObserve">
+          <button class="btn" data-observed="left" data-i18n="observedLeft" disabled>ซ้าย</button>
+          <button class="btn" data-observed="right" data-i18n="observedRight" disabled>ขวา</button>
+          <button class="btn" data-observed="both" data-i18n="observedBoth" disabled>ทั้งสองฝั่ง</button>
+          <button class="btn" data-observed="none" data-i18n="observedNone" disabled>ไม่ติด</button>
+        </div>
+        <ol id="testResults" class="test-results" aria-live="polite"></ol>
+        <p id="testDiagnosis" class="notice hidden" aria-live="polite"></p>
+        <p class="sub" data-i18n="selfTestCaution">ผลนี้มาจากสิ่งที่คุณเห็น คำสั่ง BLE ส่งสำเร็จไม่ได้ยืนยันว่าไฟติดจริง และ Welcome ขั้นนี้เป็นพรีวิวจากเว็บ ไม่ใช่การทดสอบเปิดเครื่องใหม่</p>
+      </div>
+    </details>
+
+    <details class="panel tool-panel" id="rhythmDetails">
+      <summary data-i18n="rhythmTitle">ไฟจังหวะ · ปรับ BPM</summary>
+      <div class="stack tool-content">
+        <p class="sub" data-i18n="rhythmHint">ลองลายไฟซ้าย–ขวาตามจังหวะสูงสุดครั้งละ 30 วินาที คำสั่งที่พบยังแยกไฟหน้ากับหลังไม่ได้ จังหวะจริงขึ้นกับการตอบสนองของบอร์ด โหมดนี้ไม่บันทึกลงบอร์ด</p>
+        <div class="field"><label for="rhythmBpm"><span data-i18n="rhythmSpeed">ความเร็ว</span><strong class="value" id="rhythmBpmValue">80 BPM</strong></label><input type="range" id="rhythmBpm" min="60" max="160" step="5" value="80"><div class="range-ends"><span>60 BPM</span><span>160 BPM</span></div></div>
+        <div class="row rhythm-presets"><button class="btn active" data-bpm="80" aria-pressed="true">80 BPM</button><button class="btn" data-bpm="120" aria-pressed="false">120 BPM</button></div>
+        <div class="rhythm-patterns" role="group" aria-label="รูปแบบจังหวะ" data-i18n-aria="rhythmPatterns">
+          <button class="btn active" data-rhythm="double" aria-pressed="true" data-i18n="rhythmDouble">ซ้ายซ้าย · ขวาขวา</button>
+          <button class="btn" data-rhythm="alternating" aria-pressed="false" data-i18n="rhythmAlternate">สลับซ้ายขวา</button>
+          <button class="btn" data-rhythm="syncopated" aria-pressed="false" data-i18n="rhythmSyncopated">จังหวะเล่นหาง</button>
+        </div>
+        <div class="rhythm-beats" id="rhythmBeats" aria-hidden="true"></div>
+        <div class="row"><button class="btn primary" id="startRhythm" data-i18n="startRhythm">▶ เล่นจังหวะ</button><button class="btn" id="stopRhythm" data-i18n="stopRhythm" disabled>■ หยุด</button></div>
+        <p class="sub" id="rhythmStatus" aria-live="polite">จำลองบนจอจนกว่าจะเชื่อมต่อบอร์ด</p>
+      </div>
+    </details>
+
     <details class="panel diagnostics"><summary data-i18n="diagnostics">การเชื่อมต่อและบันทึกคำสั่ง</summary><div class="stack"><div class="row"><button class="btn" id="pingBtn">Ping</button><button class="btn" id="reqBtn" data-i18n="requestConfig">ขอค่าปัจจุบัน</button><button class="btn" id="copyLogBtn" data-i18n="copyLog">คัดลอกบันทึก</button></div><div id="log" class="log" aria-live="polite"></div><p class="help" data-i18n="browserHelp">ใช้เบราว์เซอร์ที่รองรับ Web Bluetooth ผ่าน HTTPS และตั้งค่าไฟขณะจอดรถเท่านั้น</p><button class="btn danger" id="resetBtn" data-i18n="factoryReset">คืนค่าโรงงาน</button></div></details>
     <p class="footer" data-i18n="footer">PISKRAFT BLE LAB · ตั้งค่าไฟขณะจอดรถเท่านั้น</p>
   </main>

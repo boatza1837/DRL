@@ -80,7 +80,22 @@ const translations = {
     noDevice:'ยังไม่ต่อบอร์ด แสดงภาพจำลองบนจอเท่านั้น',
     liveNeedsDevice:'ต่อบอร์ดก่อนเปิด Live Preview',
     liveEnabled:'เปิด Live Preview แล้ว', liveDisabled:'ปิด Live Preview แล้ว',
-    graphCannotSave:'รูปแบบนี้พรีวิวได้ แต่ยังไม่พบคำสั่งบันทึกให้เล่นเองตอนเปิดเครื่องใน APK ที่ตรวจ'
+    graphCannotSave:'รูปแบบนี้พรีวิวได้ แต่ยังไม่พบคำสั่งบันทึกให้เล่นเองตอนเปิดเครื่องใน APK ที่ตรวจ',
+    selfTestTitle:'ตรวจไฟทั้งคันใน 30 วินาที',
+    selfTestHint:'เชื่อมต่อบอร์ดก่อน แล้วดูไฟจริงทีละขั้น: DRL → ซ้าย → ขวา → ฉุกเฉิน → Welcome ขั้นละ 6 วินาที ที่ความสว่างทดสอบ 70% แตะสิ่งที่เห็นเพื่อเก็บผล',
+    startSelfTest:'▶ เริ่มตรวจไฟ', stopTest:'■ หยุด', testReady:'พร้อมตรวจไฟ',
+    selfTestObserve:'ไฟจริงออกฝั่งไหน?', observedLeft:'ซ้าย', observedRight:'ขวา', observedBoth:'ทั้งสองฝั่ง', observedNone:'ไม่ติด',
+    observedMissing:'ไม่ได้บันทึกผล', testStep:(step, total, name, seconds) => `ขั้น ${step}/${total} · ${name} · เหลือ ${seconds} วินาที`,
+    testComplete:'ตรวจครบแล้ว · ดูผลด้านล่าง', testStopped:'หยุดการตรวจไฟแล้ว', testSendFailed:'ส่งคำสั่งไม่สำเร็จ ตรวจการเชื่อมต่อ', stopSendFailed:'ส่งคำสั่งหยุดไม่สำเร็จ ตรวจไฟที่รถ',
+    testResult:(name, result) => `${name}: ${result}`, testMismatch:' · ไม่ตรงกับที่คาด',
+    testSwapped:'ไฟซ้ายกับขวาดูเหมือนสลับกันตามผลที่คุณบันทึก', testUnlit:'มีขั้นที่คุณบันทึกว่าไฟไม่ติด ตรวจสายไฟและบันทึกคำสั่ง',
+    testIncomplete:'ตรวจครบแล้ว แต่มีขั้นที่ยังไม่ได้บันทึกผล', testMatched:'ผลที่บันทึกตรงกับฝั่งที่คาดทุกขั้น', testDifferent:'บางขั้นออกไม่ตรงฝั่งที่คาด ดูรายละเอียดด้านบน',
+    selfTestCaution:'ผลนี้มาจากสิ่งที่คุณเห็น คำสั่ง BLE ส่งสำเร็จไม่ได้ยืนยันว่าไฟติดจริง และ Welcome ขั้นนี้เป็นพรีวิวจากเว็บ ไม่ใช่การทดสอบเปิดเครื่องใหม่',
+    rhythmTitle:'ไฟจังหวะ · ปรับ BPM', rhythmHint:'ลองลายไฟซ้าย–ขวาตามจังหวะสูงสุดครั้งละ 30 วินาที คำสั่งที่พบยังแยกไฟหน้ากับหลังไม่ได้ จังหวะจริงขึ้นกับการตอบสนองของบอร์ด โหมดนี้ไม่บันทึกลงบอร์ด',
+    rhythmSpeed:'ความเร็ว', rhythmPatterns:'รูปแบบจังหวะ', rhythmDouble:'ซ้ายซ้าย · ขวาขวา', rhythmAlternate:'สลับซ้ายขวา', rhythmSyncopated:'จังหวะเล่นหาง',
+    startRhythm:'▶ เล่นจังหวะ', stopRhythm:'■ หยุด', rhythmOffline:'จำลองบนจอจนกว่าจะเชื่อมต่อบอร์ด',
+    rhythmLive:'กำลังส่งจังหวะไปบอร์ด · เวลาอาจคลาดเคลื่อนตาม Bluetooth', rhythmScreen:'กำลังจำลองจังหวะบนจอ', rhythmStopped:'หยุดเล่นจังหวะแล้ว', rhythmTimedOut:'ครบ 30 วินาทีแล้ว · กดเล่นเพื่อเริ่มใหม่',
+    sideInitialLeft:'ซ', sideInitialRight:'ข'
   },
   en: {
     language:'Language', motorcycleLights:'Simulated motorcycle front lights', curveAccessible:'Editable brightness curve',
@@ -147,7 +162,22 @@ const translations = {
     noDevice:'No board connected; showing the on-screen simulation only',
     liveNeedsDevice:'Connect the board before enabling Live Preview',
     liveEnabled:'Live Preview enabled', liveDisabled:'Live Preview disabled',
-    graphCannotSave:'This pattern can preview while connected, but no startup-save command was found in the inspected APK'
+    graphCannotSave:'This pattern can preview while connected, but no startup-save command was found in the inspected APK',
+    selfTestTitle:'Check every light in 30 seconds',
+    selfTestHint:'Connect the board, then watch the real lights: DRL → Left → Right → Hazard → Welcome. Each step lasts 6 seconds at 70% test brightness. Tap what you see to record the result.',
+    startSelfTest:'▶ Start light check', stopTest:'■ Stop', testReady:'Ready to check lights',
+    selfTestObserve:'Which real lights are on?', observedLeft:'Left', observedRight:'Right', observedBoth:'Both sides', observedNone:'No light',
+    observedMissing:'No result recorded', testStep:(step, total, name, seconds) => `Step ${step}/${total} · ${name} · ${seconds} s left`,
+    testComplete:'Light check complete · See results below', testStopped:'Light check stopped', testSendFailed:'Command failed. Check the connection.', stopSendFailed:'Stop command failed. Check the vehicle lights.',
+    testResult:(name, result) => `${name}: ${result}`, testMismatch:' · unexpected side',
+    testSwapped:'Your recorded results suggest that left and right are swapped', testUnlit:'You recorded a step with no light. Check wiring and the command log.',
+    testIncomplete:'The check finished, but some steps have no recorded result', testMatched:'Every recorded result matches the expected side', testDifferent:'Some results differ from the expected side. See the list above.',
+    selfTestCaution:'Results are based on what you observe. A successful BLE write does not prove a lamp lit. The Welcome step previews from the website; it does not test a fresh power-on.',
+    rhythmTitle:'Rhythm lights · adjustable BPM', rhythmHint:'Play left/right patterns for up to 30 seconds at a time. The known commands cannot address front and rear separately. Actual timing depends on the board response. This preview is not saved.',
+    rhythmSpeed:'Speed', rhythmPatterns:'Rhythm patterns', rhythmDouble:'Left left · right right', rhythmAlternate:'Alternate sides', rhythmSyncopated:'Syncopated chase',
+    startRhythm:'▶ Play rhythm', stopRhythm:'■ Stop', rhythmOffline:'On-screen simulation until a board is connected',
+    rhythmLive:'Sending rhythm to the board · Bluetooth timing may vary', rhythmScreen:'Simulating the rhythm on screen', rhythmStopped:'Rhythm stopped', rhythmTimedOut:'30 seconds complete · Press Play to start again',
+    sideInitialLeft:'L', sideInitialRight:'R'
   }
 };
 
@@ -195,6 +225,19 @@ const state = {
   selectedPoint: 0, previewTimer: null, welcomeRun: 0, visualTimer: null, blinkOn: true,
   profiles: storedProfiles(), activeProfile: null, config: null
 };
+const testSteps = [
+  {name:'drl', mode:'DRL', expected:'both'},
+  {name:'left', mode:'LEFT', expected:'left'},
+  {name:'right', mode:'RIGHT', expected:'right'},
+  {name:'hazard', mode:'HAZARD', expected:'both'},
+  {name:'animation', mode:'WELCOME', expected:'both'}
+];
+const rhythmSequences = {
+  double:['LEFT','LEFT','RIGHT','RIGHT'],
+  alternating:['LEFT','RIGHT'],
+  syncopated:['LEFT','LEFT','RIGHT','RIGHT','LEFT','LEFT','RIGHT','LEFT','RIGHT','RIGHT']
+};
+const toolState = {kind:null, run:0, step:-1, completed:0, remaining:6, results:[], bpm:80, rhythm:'double', beat:0, rhythmOnBoard:false, testStatus:'testReady', rhythmStatus:'rhythmOffline'};
 const logLines = [];
 const tr = key => translations[state.language][key] || key;
 function log(message) {
@@ -229,12 +272,14 @@ function setLanguage(language) {
   connectionUI();
   renderProfiles();
   updateCurveLabels();
+  renderToolText();
   try { localStorage.setItem('piskraft-language', state.language); } catch {}
 }
 
 function stopWelcome() { state.welcomeRun++; }
 function disconnected() {
   const wasConnected = state.connected;
+  stopActiveTool(false);
   stopWelcome();
   clearTimeout(state.previewTimer);
   state.connected = false;
@@ -374,6 +419,7 @@ function schedulePreview() {
   state.previewTimer = setTimeout(() => { if (state.connected && $('live').checked) preview(true); }, 200);
 }
 function cancelPreview() {
+  stopActiveTool(false);
   clearTimeout(state.previewTimer);
   stopWelcome();
   clearInterval(state.visualTimer);
@@ -384,6 +430,7 @@ function cancelPreview() {
   return state.connected ? send('CANCEL') : Promise.resolve(true);
 }
 function selectMode(mode, shouldPreview = $('live').checked) {
+  stopActiveTool();
   state.returnFromTurn = mode === 'DRL'
     ? (state.mode === 'LEFT' ? [0,state.lastLevels[1]]
       : state.mode === 'RIGHT' ? [state.lastLevels[0],0]
@@ -417,7 +464,7 @@ function selectWelcome(welcome) {
   });
   $('curveEditor').classList.toggle('hidden', welcome !== 'custom');
 }
-function updateLights(left, right, welcomeSignalSide = '') {
+function updateLights(left, right, signalOverride = null) {
   const drl = Number($('drl').value);
   const turn = Number($('turnBrightness').value);
   const other = Number($('opposite').value);
@@ -432,8 +479,8 @@ function updateLights(left, right, welcomeSignalSide = '') {
     $(id).querySelectorAll('i').forEach((segment, index) => segment.classList.toggle('on', index < Math.round(value * 12 / 100)));
   }
   for (const [id, side, value, signal] of [
-    ['leftBeam','left',left,['LEFT','HAZARD'].includes(state.mode) || welcomeSignalSide === 'left'],
-    ['rightBeam','right',right,['RIGHT','HAZARD'].includes(state.mode) || welcomeSignalSide === 'right']
+    ['leftBeam','left',left,signalOverride === null ? ['LEFT','HAZARD'].includes(state.mode) : ['left','both'].includes(signalOverride)],
+    ['rightBeam','right',right,signalOverride === null ? ['RIGHT','HAZARD'].includes(state.mode) : ['right','both'].includes(signalOverride)]
   ]) {
     for (const beam of [$(id), ...document.querySelectorAll(`[data-beam="${side}"]`)]) {
       beam.style.opacity = String(0.06 + clamp(value, 0, 100) * 0.0094);
@@ -541,6 +588,180 @@ async function previewWelcome(sendToBoard = true) {
     await delay(sendToBoard ? 160 : 50);
   }
   return true;
+}
+function pauseForTool() {
+  clearTimeout(state.previewTimer);
+  clearInterval(state.visualTimer);
+  state.visualTimer = null;
+  stopWelcome();
+  $('live').checked = false;
+}
+function stopActiveTool(sendCancel = true) {
+  if (!toolState.kind) return Promise.resolve(true);
+  const kind = toolState.kind;
+  toolState.kind = null;
+  toolState.run++;
+  if (kind === 'test') toolState.testStatus = 'testStopped';
+  else toolState.rhythmStatus = 'rhythmStopped';
+  updateLights(0, 0, '');
+  renderToolText();
+  return sendCancel && state.connected
+    ? send('CANCEL').then(sent => { if (!sent) toast(tr('stopSendFailed')); return sent; })
+    : Promise.resolve(true);
+}
+function renderTestResults() {
+  const list = $('testResults');
+  const diagnosis = $('testDiagnosis');
+  list.replaceChildren();
+  for (let index = 0; index < toolState.completed; index++) {
+    const step = testSteps[index];
+    const observed = toolState.results[index];
+    const item = document.createElement('li');
+    item.textContent = tr('testResult')(tr(step.name), observed ? tr('observed' + observed[0].toUpperCase() + observed.slice(1)) : tr('observedMissing'));
+    if (observed && observed !== step.expected) item.textContent += tr('testMismatch');
+    item.className = observed === step.expected ? 'good' : 'mismatch';
+    list.appendChild(item);
+  }
+  diagnosis.classList.toggle('hidden', toolState.completed !== testSteps.length);
+  if (toolState.completed === testSteps.length) {
+    const result = toolState.results;
+    const key = result[1] === 'right' && result[2] === 'left' ? 'testSwapped'
+      : result.includes('none') ? 'testUnlit'
+      : result.includes(null) ? 'testIncomplete'
+      : testSteps.every((step, index) => result[index] === step.expected) ? 'testMatched' : 'testDifferent';
+    diagnosis.textContent = tr(key);
+  }
+}
+function renderRhythmBeats() {
+  const beats = $('rhythmBeats');
+  beats.replaceChildren();
+  rhythmSequences[toolState.rhythm].forEach((side, index) => {
+    const chip = document.createElement('span');
+    chip.textContent = tr(side === 'LEFT' ? 'sideInitialLeft' : 'sideInitialRight');
+    chip.classList.toggle('active', toolState.kind === 'rhythm' && toolState.beat % rhythmSequences[toolState.rhythm].length === index);
+    beats.appendChild(chip);
+  });
+}
+function renderToolText() {
+  const testing = toolState.kind === 'test';
+  const rhythmic = toolState.kind === 'rhythm';
+  $('startSelfTest').disabled = testing;
+  $('stopSelfTest').disabled = !testing;
+  $('startRhythm').disabled = rhythmic;
+  $('stopRhythm').disabled = !rhythmic;
+  $('testStatus').textContent = testing
+    ? tr('testStep')(toolState.step + 1, testSteps.length, tr(testSteps[toolState.step].name), toolState.remaining)
+    : tr(toolState.testStatus);
+  $('rhythmStatus').textContent = rhythmic ? tr(toolState.rhythmOnBoard ? 'rhythmLive' : 'rhythmScreen') : tr(toolState.rhythmStatus);
+  $('rhythmBpmValue').textContent = toolState.bpm + ' BPM';
+  $('rhythmBpm').value = String(toolState.bpm);
+  $('testProgressBar').style.width = (testing ? (toolState.step * 6 + (6 - toolState.remaining)) / 30 * 100 : toolState.completed / testSteps.length * 100) + '%';
+  document.querySelectorAll('[data-observed]').forEach(button => {
+    button.disabled = !testing;
+    button.classList.toggle('active', testing && toolState.results[toolState.step] === button.dataset.observed);
+  });
+  document.querySelectorAll('[data-bpm]').forEach(button => {
+    const selected = Number(button.dataset.bpm) === toolState.bpm;
+    button.classList.toggle('active', selected);
+    button.setAttribute('aria-pressed', String(selected));
+  });
+  document.querySelectorAll('[data-rhythm]').forEach(button => {
+    const selected = button.dataset.rhythm === toolState.rhythm;
+    button.classList.toggle('active', selected);
+    button.setAttribute('aria-pressed', String(selected));
+  });
+  renderTestResults();
+  renderRhythmBeats();
+}
+function diagnosticFrame(step, seconds) {
+  const blink = Math.floor(seconds / 0.46) % 2 === 0;
+  if (step.mode === 'DRL') updateLights(70, 70, '');
+  else if (step.mode === 'LEFT') updateLights(blink ? 70 : 0, 0, 'left');
+  else if (step.mode === 'RIGHT') updateLights(0, blink ? 70 : 0, 'right');
+  else if (step.mode === 'HAZARD') updateLights(blink ? 70 : 0, blink ? 70 : 0, 'both');
+  else {
+    const level = Math.round(70 * Math.min(1, seconds / 3));
+    updateLights(level, level, '');
+    return level;
+  }
+  return null;
+}
+async function runSelfTest() {
+  if (!state.connected) { toolState.testStatus = 'connectFirst'; renderToolText(); toast(tr('connectFirst')); return; }
+  await stopActiveTool();
+  pauseForTool();
+  const run = ++toolState.run;
+  toolState.kind = 'test';
+  toolState.results = Array(testSteps.length).fill(null);
+  toolState.completed = 0;
+  toolState.step = 0;
+  toolState.remaining = 6;
+  renderToolText();
+  for (let index = 0; index < testSteps.length && run === toolState.run; index++) {
+    const step = testSteps[index];
+    toolState.step = index;
+    toolState.remaining = 6;
+    renderToolText();
+    if (step.mode !== 'WELCOME' && !await send(previewCommand(step.mode, 70, 0))) {
+      if (run === toolState.run) { stopActiveTool(); toolState.testStatus = 'testSendFailed'; renderToolText(); toast(tr('testSendFailed')); }
+      return;
+    }
+    if (run !== toolState.run) return;
+    const started = performance.now();
+    while (run === toolState.run) {
+      const seconds = Math.min(6, (performance.now() - started) / 1000);
+      toolState.remaining = Math.max(0, Math.ceil(6 - seconds));
+      const level = diagnosticFrame(step, seconds);
+      renderToolText();
+      if (step.mode === 'WELCOME' && !await send(previewCommand('DRL', level))) {
+        if (run === toolState.run) { stopActiveTool(); toolState.testStatus = 'testSendFailed'; renderToolText(); toast(tr('testSendFailed')); }
+        return;
+      }
+      if (seconds >= 6) break;
+      await delay(step.mode === 'WELCOME' ? 170 : 90);
+    }
+    if (run !== toolState.run) return;
+    toolState.completed = index + 1;
+    renderTestResults();
+  }
+  if (run !== toolState.run) return;
+  await stopActiveTool();
+  toolState.testStatus = 'testComplete';
+  renderToolText();
+}
+async function runRhythm() {
+  await stopActiveTool();
+  pauseForTool();
+  const run = ++toolState.run;
+  toolState.kind = 'rhythm';
+  toolState.beat = 0;
+  toolState.rhythmOnBoard = state.connected;
+  const started = performance.now();
+  renderToolText();
+  while (run === toolState.run && performance.now() - started < 30000) {
+    const sequence = rhythmSequences[toolState.rhythm];
+    const side = sequence[toolState.beat % sequence.length];
+    const halfBeat = 30000 / toolState.bpm;
+    updateLights(side === 'LEFT' ? 70 : 0, side === 'RIGHT' ? 70 : 0, side.toLowerCase());
+    renderRhythmBeats();
+    if (toolState.rhythmOnBoard && !await send(previewCommand(side, 70, 0))) {
+      if (run === toolState.run) { stopActiveTool(); toast(tr('testSendFailed')); }
+      return;
+    }
+    await delay(halfBeat);
+    if (run !== toolState.run) return;
+    updateLights(0, 0, '');
+    if (toolState.rhythmOnBoard && !await send(previewCommand('DRL', 0))) {
+      if (run === toolState.run) { stopActiveTool(); toast(tr('testSendFailed')); }
+      return;
+    }
+    await delay(halfBeat);
+    toolState.beat++;
+  }
+  if (run !== toolState.run) return;
+  await stopActiveTool();
+  toolState.rhythmStatus = 'rhythmTimedOut';
+  renderToolText();
 }
 function saveCurveLocally() {
   try { localStorage.setItem('piskraft-curve', JSON.stringify(state.curve)); } catch {}
@@ -651,6 +872,27 @@ document.querySelectorAll('[data-preset]').forEach(button => button.addEventList
   updateValues();
   selectMode('DRL', true);
 }));
+$('startSelfTest').addEventListener('click', runSelfTest);
+$('stopSelfTest').addEventListener('click', () => stopActiveTool());
+document.querySelectorAll('[data-observed]').forEach(button => button.addEventListener('click', () => {
+  if (toolState.kind !== 'test') return;
+  toolState.results[toolState.step] = button.dataset.observed;
+  renderToolText();
+}));
+$('startRhythm').addEventListener('click', runRhythm);
+$('stopRhythm').addEventListener('click', () => stopActiveTool());
+$('rhythmBpm').addEventListener('input', event => { toolState.bpm = Number(event.target.value); renderToolText(); });
+document.querySelectorAll('[data-bpm]').forEach(button => button.addEventListener('click', () => {
+  toolState.bpm = Number(button.dataset.bpm);
+  renderToolText();
+}));
+document.querySelectorAll('[data-rhythm]').forEach(button => button.addEventListener('click', () => {
+  toolState.rhythm = button.dataset.rhythm;
+  renderToolText();
+}));
+for (const [id, kind] of [['selfTestDetails','test'],['rhythmDetails','rhythm']]) {
+  $(id).addEventListener('toggle', event => { if (!event.target.open && toolState.kind === kind) stopActiveTool(); });
+}
 $('live').addEventListener('change', event => {
   if (event.target.checked) {
     if (!state.connected) { event.target.checked = false; toast(tr('liveNeedsDevice')); return; }
@@ -666,12 +908,14 @@ $('connectBtn').addEventListener('click', connect);
 $('previewWelcomeBtn').addEventListener('click', () => selectMode('ANIMATION', true));
 $('readBtn').addEventListener('click', async () => {
   if (!state.connected) { toast(tr('connectFirst')); $('saveStatus').textContent = tr('connectFirst'); return; }
+  await stopActiveTool();
   if (await send('REQ')) { toast(tr('readSent')); $('saveStatus').textContent = tr('readSent'); }
 });
 $('reqBtn').addEventListener('click', () => send('REQ'));
 $('pingBtn').addEventListener('click', () => send('PING'));
 $('saveBtn').addEventListener('click', async () => {
   if (!state.connected) { toast(tr('connectFirst')); return; }
+  await stopActiveTool();
   if (!['fade-in','pulse','flash'].includes(state.welcome)) { toast(tr('graphCannotSave')); $('saveStatus').textContent = tr('graphCannotSave'); return; }
   clearTimeout(state.previewTimer);
   stopWelcome();

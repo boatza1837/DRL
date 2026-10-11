@@ -11,6 +11,8 @@ Mobile-first Web Bluetooth controller for the PISKRAFT DRL ESP32 board.
 - Day, Night, and Rain lighting profiles start with editable values. Tap Preview to load a profile and send a temporary DRL preview if connected; without a board, the screen simulation still runs. Save current settings to a profile to keep them in this browser. This does not persist settings on the board.
 - The motorcycle diagram in the live preview animates left/right/hazard signals, the return fade to DRL, and Welcome. The diagram and light bars also work without a Bluetooth connection. They show requested values, not measured light or board state.
 - Live Preview starts off. Enabling it requires a Bluetooth connection and makes mode and slider changes send temporary commands. Tapping a Welcome pattern or a DRL brightness preset sends a temporary preview even while the switch is off; disconnected previews only animate the screen and show a connection notice. Read from device also checks the connection first.
+- Two collapsed tools sit below the settings. The 30-second light check requires a connected board and runs DRL, Left, Right, Hazard, and a website-streamed Welcome preview for six seconds each at 70% test brightness. The rider records what actually lights at each step. It does not verify startup persistence or treat a successful BLE write as proof that a lamp lit.
+- Rhythm lights offer 80/120 BPM shortcuts, a 60–160 BPM slider, and three left/right beat patterns. They simulate offline or send alternating preview commands while connected, stop after 30 seconds, and do not save to the board. Timing on the real board depends on BLE latency and how its firmware handles preview commands. The known protocol cannot address front and rear lights separately.
 
 ## BLE behavior
 
