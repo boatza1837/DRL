@@ -17,12 +17,22 @@ const defaultProfiles = {
 const translations = {
   th: {
     language:'ภาษา', motorcycleLights:'ภาพจำลองไฟหน้ารถจักรยานยนต์', curveAccessible:'กราฟความสว่างที่แก้ไขได้',
+    pageNavigation:'หน้าแอป', mainPageTab:'ตั้งค่าบอร์ด', labPageTab:'ห้องทดลอง',
+    mainPageTitle:'ค่าที่มีคำสั่งบันทึก', apkSupported:'ตาม APK',
+    mainPageHint:'หน้านี้มีเฉพาะค่าที่พบคำสั่ง CFG และ SAVE ใน APK การส่งคำสั่งสำเร็จยังไม่ยืนยันว่าบอร์ดจำค่า ต้องอ่านกลับหรือทดสอบเปิดเครื่องใหม่',
+    labPageTitle:'ห้องทดลองพรีวิว', labPageHint:'ฟีเจอร์หน้านี้ไม่บันทึกลงบอร์ด ค่าบางอย่างจำได้เฉพาะในเบราว์เซอร์และต้องเปิดเว็บเพื่อเล่นพรีวิว ค่าที่เลือกทดลองจะไม่เปลี่ยนค่าหน้าตั้งค่าบอร์ด',
+    selectThenSave:'เลือกแล้วกดบันทึก', turnSaveTitle:'ค่า DIM และ FADE ของ DRL',
+    oppositeSaveHint:'บันทึกด้วย CFG,DIM; ผลจริงขณะเลี้ยวต้องตรวจที่รถ',
+    welcomeSaveTitle:'Welcome ที่มีคำสั่งบันทึก', welcomeSaveHint:'เลือกแบบ 1–3 แล้วกดบันทึกลงบอร์ด',
+    previewSettings:'ค่าพรีวิว', profileAdjustTitle:'ปรับโปรไฟล์ทดลอง',
+    profileAdjustHint:'ปรับค่าพรีวิวในห้องทดลองได้ โดยไม่เปลี่ยนค่าที่จะบันทึกในหน้าตั้งค่าบอร์ด',
+    labWelcomeHint:'รูปแบบหน้านี้ทดลองได้ขณะเชื่อมต่อ แต่ไม่มีคำสั่งบันทึกให้เล่นเองตอนเปิดเครื่อง',
     visualSimulation:'ภาพจำลองไฟ • ไม่ใช่สถานะจริงจากบอร์ด',
     myProfiles:'โปรไฟล์ไฟส่วนตัว', profilesLocal:'เก็บในเบราว์เซอร์นี้',
     profilesHint:'แตะทดลองเพื่อโหลดค่าและดูไฟ DRL ทันที ปรับค่าด้านล่างแล้วบันทึกทับโปรไฟล์ได้',
     profileDay:'ขี่กลางวัน', profileNight:'ขี่กลางคืน', profileRain:'ขี่ฝนตก',
     previewProfile:'▶ ทดลอง', saveProfile:'เก็บค่าปัจจุบัน',
-    profileDeviceHint:'แตะทดลองเพื่อส่งค่าพรีวิวไปบอร์ดเมื่อเชื่อมต่อ หากยังไม่เชื่อมต่อจะจำลองบนจอเท่านั้น การบันทึกลงบอร์ดใช้ปุ่มด้านล่าง',
+    profileDeviceHint:'แตะทดลองเพื่อส่งค่าพรีวิวไปบอร์ดเมื่อเชื่อมต่อ หากยังไม่เชื่อมต่อจะจำลองบนจอเท่านั้น โปรไฟล์นี้เก็บในเบราว์เซอร์ ไม่บันทึกลงบอร์ด',
     profileSummary:(drl, turn, welcome) => `DRL ${drl}% · เลี้ยว ${turn}% · ${welcome}`,
     profileSaved:'เก็บโปรไฟล์ในเบราว์เซอร์แล้ว', profilePreview:'กำลังทดลองโปรไฟล์',
     profileSaveFailed:'เบราว์เซอร์นี้ไม่อนุญาตให้เก็บโปรไฟล์',
@@ -32,20 +42,14 @@ const translations = {
     liveChangesHint:'เปิดแล้วเลือกโหมดหรือเลื่อนสไลเดอร์จะส่งไปบอร์ดทันที',
     lightingSettings:'ตั้งค่าไฟ', chooseSection:'ตามโหมดที่เลือกด้านบน',
     turn:'ไฟเลี้ยว', welcome:'Welcome', drlSettings:'ตั้งค่า DRL',
-    drlBrightness:'ความสว่าง DRL', fadeDuration:'เวลา DRL ค่อย ๆ กลับหลังปิดไฟเลี้ยว',
-    fadeExplanation:'ภาพจำลองจะค่อย ๆ กลับเป็น DRL ในเวลาที่เลือก สูงสุด 5 วินาที เว็บส่ง CFG,FADE ไปบอร์ดเมื่อบันทึก แต่ผลจริงหลังปิดไฟเลี้ยวยังต้องทดสอบกับบอร์ด',
+    drlBrightness:'ความสว่าง DRL', fadeDuration:'ระยะเวลาเฟด DRL',
+    fadeExplanation:'บันทึกด้วย CFG,FADE (0.1–5 วินาที) ตาม APK ต้องทดสอบกับบอร์ดว่าเฟดมีผลช่วงไหน และค่ายังคงอยู่หลังเปิดเครื่องใหม่หรือไม่',
     quickPresets:'ค่าความสว่างสำเร็จรูป', previewOnly:'พรีวิวเท่านั้น',
     night:'กลางคืน', daylight:'กลางวัน', balanced:'สมดุล', off:'ปิด',
     turnSettings:'ตั้งค่าไฟเลี้ยว', turnBrightness:'ความสว่างไฟเลี้ยว',
     turnPreviewOnly:'ค่านี้ใช้กับพรีวิวเท่านั้น แอปเดิมไม่มีคำสั่งบันทึกค่านี้แยกต่างหาก',
     oppositeBrightness:'DRL ฝั่งตรงข้าม',
     oppositeHint:'ความสว่างของอีกฝั่งขณะเปิดไฟเลี้ยวซ้ายหรือขวา',
-    turnSpeed:'ความเร็วไฟเลี้ยว (ทดลอง)',
-    turnSpeedHint:'ปรับจังหวะภาพจำลองซ้าย/ขวา/ฉุกเฉิน กดทดลองเพื่อส่งคำสั่งพรีวิวไปบอร์ด 15 วินาที รีเลย์อาจกำหนดจังหวะเอง และค่านี้ไม่บันทึกลงบอร์ด',
-    startTurnSpeed:'▶ ทดลองความเร็ว 15 วินาที', stopTurnSpeed:'■ หยุด',
-    turnSpeedReady:'เลือกซ้าย ขวา หรือฉุกเฉินด้านบนแล้วเชื่อมต่อบอร์ดเพื่อทดลอง',
-    turnSpeedRunning:'กำลังส่งจังหวะไปบอร์ด · ผลจริงขึ้นกับบอร์ดและรีเลย์',
-    turnSpeedStopped:'หยุดทดลองแล้ว', turnSpeedTimedOut:'ครบ 15 วินาทีแล้ว · ดูจังหวะไฟจริงที่รถ',
     welcomeSettings:'ไฟต้อนรับตอนเปิดเครื่อง',
     welcomeHint:'แตะรูปแบบเพื่อทดลองกับบอร์ดที่เชื่อมต่อ แบบ 1–3 บันทึกได้ ส่วนแบบอื่นทดลองได้ขณะเชื่อมต่อ',
     fadeIn:'ค่อย ๆ สว่าง', fadeInHint:'สว่างขึ้นอย่างนุ่มนวล',
@@ -105,12 +109,22 @@ const translations = {
   },
   en: {
     language:'Language', motorcycleLights:'Simulated motorcycle front lights', curveAccessible:'Editable brightness curve',
+    pageNavigation:'App pages', mainPageTab:'Board settings', labPageTab:'Experiments',
+    mainPageTitle:'Settings with save commands', apkSupported:'From the APK',
+    mainPageHint:'This page contains only settings with CFG and SAVE commands found in the APK. A successful write does not prove the board stored them; read them back or power-cycle the board.',
+    labPageTitle:'Preview experiments', labPageHint:'Features here are not saved to the board. Some values are kept only in this browser, and previews require the website to be open. Experiment choices do not change the Board settings values.',
+    selectThenSave:'Select, then save', turnSaveTitle:'DRL DIM and FADE settings',
+    oppositeSaveHint:'Saved with CFG,DIM; check the actual behavior on the vehicle.',
+    welcomeSaveTitle:'Welcome with save commands', welcomeSaveHint:'Choose pattern 1–3, then save to the board.',
+    previewSettings:'Preview settings', profileAdjustTitle:'Adjust experimental profile',
+    profileAdjustHint:'Adjust preview values in Experiments without changing what Board settings will save.',
+    labWelcomeHint:'Patterns on this page can preview while connected, but there is no known command to save them for startup.',
     visualSimulation:'Light simulation • not live board status',
     myProfiles:'My lighting profiles', profilesLocal:'Saved in this browser',
     profilesHint:'Tap Preview to load the settings and see DRL immediately. Adjust settings below, then save them to a profile.',
     profileDay:'Day ride', profileNight:'Night ride', profileRain:'Rain ride',
     previewProfile:'▶ Preview', saveProfile:'Save current settings',
-    profileDeviceHint:'Tap Preview to send temporary values when connected. Without a board, only the screen simulation runs. Use Save to device below to store supported settings.',
+    profileDeviceHint:'Tap Preview to send temporary values when connected. Without a board, only the screen simulation runs. This profile is stored in your browser, not on the board.',
     profileSummary:(drl, turn, welcome) => `DRL ${drl}% · Turn ${turn}% · ${welcome}`,
     profileSaved:'Profile saved in this browser', profilePreview:'Previewing profile',
     profileSaveFailed:'This browser could not save the profile',
@@ -120,20 +134,14 @@ const translations = {
     liveChangesHint:'When on, mode and slider changes are sent to the board',
     lightingSettings:'Lighting settings', chooseSection:'Follows the mode selected above',
     turn:'Turn signal', welcome:'Welcome', drlSettings:'DRL settings',
-    drlBrightness:'DRL brightness', fadeDuration:'DRL return fade after turn signal',
-    fadeExplanation:'The simulation fades back to DRL over up to 5 seconds. Save sends CFG,FADE to the board, but its physical turn-off behavior still needs a board test.',
+    drlBrightness:'DRL brightness', fadeDuration:'DRL fade duration',
+    fadeExplanation:'Saved with CFG,FADE (0.1–5 s), as in the APK. Test the board to confirm when the fade applies and whether it persists after a power cycle.',
     quickPresets:'Quick brightness presets', previewOnly:'Preview only',
     night:'Night', daylight:'Daylight', balanced:'Balanced', off:'Off',
     turnSettings:'Turn-signal settings', turnBrightness:'Turn brightness',
     turnPreviewOnly:'This value is for preview only. The original app has no separate command to save it.',
     oppositeBrightness:'Opposite-side DRL',
     oppositeHint:'Brightness of the other side during a left or right turn signal',
-    turnSpeed:'Turn-signal speed (experimental)',
-    turnSpeedHint:'Adjusts the Left/Right/Hazard screen animation. Test streams preview commands to the board for 15 seconds. The relay may set its own timing, and this value is not saved to the board.',
-    startTurnSpeed:'▶ Test speed for 15 seconds', stopTurnSpeed:'■ Stop',
-    turnSpeedReady:'Select Left, Right, or Hazard above and connect the board to test',
-    turnSpeedRunning:'Streaming a rhythm to the board · actual timing depends on the board and relay',
-    turnSpeedStopped:'Speed test stopped', turnSpeedTimedOut:'15 seconds complete · check the actual lights on the vehicle',
     welcomeSettings:'Startup Welcome animation',
     welcomeHint:'Tap a pattern to preview on a connected board. Modes 1–3 can be saved; the others run only while connected.',
     fadeIn:'Fade in', fadeInHint:'Gradually brightens',
@@ -211,13 +219,6 @@ function storedWelcomeDuration() {
   } catch {}
   return 5;
 }
-function storedTurnBpm() {
-  try {
-    const value = Number(localStorage.getItem('piskraft-turn-bpm'));
-    if (Number.isInteger(value) && value >= 60 && value <= 160 && value % 5 === 0) return value;
-  } catch {}
-  return 80;
-}
 function validProfile(raw, fallback) {
   if (!raw || typeof raw !== 'object') return {...fallback, curve:fallback.curve.slice()};
   const percent = key => Number.isFinite(raw[key]) && raw[key] >= 0 && raw[key] <= 100 ? Math.round(raw[key]) : fallback[key];
@@ -239,10 +240,9 @@ function storedProfiles() {
 const state = {
   language: storedLanguage(), device: null, server: null, rx: null, tx: null,
   connected: false, connecting: false, queue: Promise.resolve(), epoch: 0,
-  mode: 'DRL', setting: 'drl', welcome: 'fade-in', curve: storedCurve(),
+  page:'main', mainSnapshot:null, mode: 'DRL', setting: 'drl', welcome: 'fade-in', lastSavableWelcome:'fade-in', curve: storedCurve(),
   welcomeDuration: storedWelcomeDuration(), lastLevels:[50,50], returnFromTurn:null,
   selectedPoint: 0, previewTimer: null, welcomeRun: 0, visualTimer: null, blinkOn: true,
-  turnBpm: storedTurnBpm(),
   profiles: storedProfiles(), activeProfile: null, config: null
 };
 const testSteps = [
@@ -257,7 +257,7 @@ const rhythmSequences = {
   alternating:['LEFT','RIGHT'],
   syncopated:['LEFT','LEFT','RIGHT','RIGHT','LEFT','LEFT','RIGHT','LEFT','RIGHT','RIGHT']
 };
-const toolState = {kind:null, run:0, step:-1, completed:0, remaining:6, results:[], bpm:80, rhythm:'double', beat:0, rhythmOnBoard:false, testStatus:'testReady', rhythmStatus:'rhythmOffline', turnSpeedStatus:'turnSpeedReady'};
+const toolState = {kind:null, run:0, step:-1, completed:0, remaining:6, results:[], bpm:80, rhythm:'double', beat:0, rhythmOnBoard:false, testStatus:'testReady', rhythmStatus:'rhythmOffline'};
 const logLines = [];
 const tr = key => translations[state.language][key] || key;
 function log(message) {
@@ -472,11 +472,41 @@ function selectMode(mode, shouldPreview = $('live').checked) {
 }
 function selectSetting(setting) {
   state.setting = setting;
-  ['drl','turn','welcome'].forEach(name => $(name + 'Panel').classList.toggle('hidden', name !== setting));
+  $('turnPanel').classList.toggle('hidden', setting !== 'turn');
+  $('welcomePanel').classList.toggle('hidden', setting !== 'welcome');
+}
+function showPage(page) {
+  const nextPage = page === 'lab' ? 'lab' : 'main';
+  if (nextPage === 'lab' && state.page === 'main') {
+    state.mainSnapshot = {
+      drl:$('drl').value, opposite:$('opposite').value,
+      fade:$('fadeDuration').value, welcome:state.lastSavableWelcome
+    };
+  }
+  if (nextPage === 'main' && state.page === 'lab') {
+    cancelPreview();
+    if (state.mainSnapshot) {
+      $('drl').value = state.mainSnapshot.drl;
+      $('opposite').value = state.mainSnapshot.opposite;
+      $('fadeDuration').value = state.mainSnapshot.fade;
+      selectWelcome(state.mainSnapshot.welcome);
+      updateValues();
+    }
+  }
+  state.page = nextPage;
+  $('mainPage').classList.toggle('hidden', nextPage !== 'main');
+  $('labPage').classList.toggle('hidden', nextPage !== 'lab');
+  document.querySelectorAll('[data-page-link]').forEach(link => {
+    if (link.dataset.pageLink === nextPage) link.setAttribute('aria-current', 'page');
+    else link.removeAttribute('aria-current');
+  });
+  if (nextPage === 'lab') selectSetting(state.setting);
+  window.scrollTo(0, 0);
 }
 function selectWelcome(welcome) {
   stopWelcome();
   state.welcome = welcome;
+  if (['fade-in','pulse','flash'].includes(welcome)) state.lastSavableWelcome = welcome;
   document.querySelectorAll('[data-welcome]').forEach(button => {
     const selected = button.dataset.welcome === welcome;
     button.classList.toggle('active', selected);
@@ -533,7 +563,7 @@ function startVisualMode() {
   if (matchMedia('(prefers-reduced-motion: reduce)').matches) { updateLights(); return; }
   if (['LEFT','RIGHT','HAZARD'].includes(state.mode)) {
     updateLights();
-    state.visualTimer = setInterval(() => { state.blinkOn = !state.blinkOn; updateLights(); }, 30000 / state.turnBpm);
+    state.visualTimer = setInterval(() => { state.blinkOn = !state.blinkOn; updateLights(); }, 460);
   } else updateLights();
 }
 function updateValues() {
@@ -541,6 +571,12 @@ function updateValues() {
   $('turnNumber').textContent = $('turnBrightness').value + '%';
   $('oppositeNumber').textContent = $('opposite').value + '%';
   $('fadeNumber').textContent = (Number($('fadeDuration').value) / 1000).toFixed(1) + ' s';
+  $('labDrl').value = $('drl').value;
+  $('labOpposite').value = $('opposite').value;
+  $('labFade').value = $('fadeDuration').value;
+  $('labDrlNumber').textContent = $('drlNumber').textContent;
+  $('labOppositeNumber').textContent = $('oppositeNumber').textContent;
+  $('labFadeNumber').textContent = $('fadeNumber').textContent;
   updateLights();
 }
 function curveValue(time) {
@@ -622,8 +658,7 @@ function stopActiveTool(sendCancel = true) {
   toolState.kind = null;
   toolState.run++;
   if (kind === 'test') toolState.testStatus = 'testStopped';
-  else if (kind === 'rhythm') toolState.rhythmStatus = 'rhythmStopped';
-  else toolState.turnSpeedStatus = 'turnSpeedStopped';
+  else toolState.rhythmStatus = 'rhythmStopped';
   updateLights(0, 0, '');
   renderToolText();
   return sendCancel && state.connected
@@ -666,16 +701,10 @@ function renderRhythmBeats() {
 function renderToolText() {
   const testing = toolState.kind === 'test';
   const rhythmic = toolState.kind === 'rhythm';
-  const turnSpeedTesting = toolState.kind === 'turnSpeed';
   $('startSelfTest').disabled = testing;
   $('stopSelfTest').disabled = !testing;
   $('startRhythm').disabled = rhythmic;
   $('stopRhythm').disabled = !rhythmic;
-  $('startTurnSpeed').disabled = turnSpeedTesting;
-  $('stopTurnSpeed').disabled = !turnSpeedTesting;
-  $('turnBpm').value = String(state.turnBpm);
-  $('turnBpmNumber').textContent = state.turnBpm + ' BPM';
-  $('turnSpeedStatus').textContent = tr(turnSpeedTesting ? 'turnSpeedRunning' : toolState.turnSpeedStatus);
   $('testStatus').textContent = testing
     ? tr('testStep')(toolState.step + 1, testSteps.length, tr(testSteps[toolState.step].name), toolState.remaining)
     : tr(toolState.testStatus);
@@ -790,47 +819,6 @@ async function runRhythm() {
   toolState.rhythmStatus = 'rhythmTimedOut';
   renderToolText();
 }
-async function runTurnSpeedTest() {
-  if (!state.connected) {
-    toolState.turnSpeedStatus = 'connectFirst';
-    renderToolText();
-    toast(tr('connectFirst'));
-    return;
-  }
-  const mode = state.mode;
-  if (!['LEFT','RIGHT','HAZARD'].includes(mode)) return;
-  await stopActiveTool();
-  pauseForTool();
-  const run = ++toolState.run;
-  toolState.kind = 'turnSpeed';
-  const started = performance.now();
-  let nextPhase = started;
-  let on = true;
-  renderToolText();
-  while (run === toolState.run && performance.now() - started < 15000) {
-    const turn = on ? Number($('turnBrightness').value) : 0;
-    const other = Number($('opposite').value);
-    if (mode === 'LEFT') updateLights(turn, other, on ? 'left' : '');
-    else if (mode === 'RIGHT') updateLights(other, turn, on ? 'right' : '');
-    else updateLights(turn, turn, on ? 'both' : '');
-    if (!await send(previewCommand(mode, turn, other))) {
-      if (run === toolState.run) {
-        await stopActiveTool();
-        toolState.turnSpeedStatus = 'testSendFailed';
-        renderToolText();
-      }
-      return;
-    }
-    if (run !== toolState.run) return;
-    nextPhase += 30000 / state.turnBpm;
-    await delay(Math.max(0, nextPhase - performance.now()));
-    on = !on;
-  }
-  if (run !== toolState.run) return;
-  await stopActiveTool();
-  toolState.turnSpeedStatus = 'turnSpeedTimedOut';
-  renderToolText();
-}
 function saveCurveLocally() {
   try { localStorage.setItem('piskraft-curve', JSON.stringify(state.curve)); } catch {}
 }
@@ -929,24 +917,24 @@ document.querySelectorAll('[data-profile-save]').forEach(button => button.addEve
 document.querySelectorAll('[data-welcome]').forEach(button => button.addEventListener('click', () => {
   selectWelcome(button.dataset.welcome);
   markProfileEdited();
-  selectMode('ANIMATION', true);
+  if (state.page === 'lab') selectMode('ANIMATION', true);
 }));
 for (const id of ['drl','turnBrightness','opposite','fadeDuration']) {
   $(id).addEventListener('input', () => { markProfileEdited(); updateValues(); if (id !== 'fadeDuration') schedulePreview(); });
 }
-$('turnBpm').addEventListener('input', event => {
-  state.turnBpm = Number(event.target.value);
-  try { localStorage.setItem('piskraft-turn-bpm', String(state.turnBpm)); } catch {}
-  renderToolText();
-  if (!toolState.kind && ['LEFT','RIGHT','HAZARD'].includes(state.mode)) startVisualMode();
-});
-$('startTurnSpeed').addEventListener('click', runTurnSpeedTest);
-$('stopTurnSpeed').addEventListener('click', () => stopActiveTool());
+for (const [labId, mainId] of [['labDrl','drl'],['labOpposite','opposite'],['labFade','fadeDuration']]) {
+  $(labId).addEventListener('input', event => {
+    $(mainId).value = event.target.value;
+    markProfileEdited();
+    updateValues();
+    if (mainId !== 'fadeDuration') schedulePreview();
+  });
+}
 document.querySelectorAll('[data-preset]').forEach(button => button.addEventListener('click', () => {
   $('drl').value = button.dataset.preset;
   markProfileEdited();
   updateValues();
-  selectMode('DRL', true);
+  if (state.page === 'lab') selectMode('DRL', true);
 }));
 $('startSelfTest').addEventListener('click', runSelfTest);
 $('stopSelfTest').addEventListener('click', () => stopActiveTool());
@@ -980,6 +968,7 @@ $('live').addEventListener('change', event => {
   }
 });
 $('language').addEventListener('change', event => setLanguage(event.target.value));
+window.addEventListener('hashchange', () => showPage(location.hash === '#lab' ? 'lab' : 'main'));
 $('connectBtn').addEventListener('click', connect);
 $('previewWelcomeBtn').addEventListener('click', () => selectMode('ANIMATION', true));
 $('readBtn').addEventListener('click', async () => {
@@ -990,7 +979,7 @@ $('readBtn').addEventListener('click', async () => {
 $('reqBtn').addEventListener('click', () => send('REQ'));
 $('pingBtn').addEventListener('click', () => send('PING'));
 $('saveBtn').addEventListener('click', async () => {
-  if (!state.connected) { toast(tr('connectFirst')); return; }
+  if (!state.connected) { toast(tr('connectFirst')); $('saveStatus').textContent = tr('connectFirst'); return; }
   await stopActiveTool();
   if (!['fade-in','pulse','flash'].includes(state.welcome)) { toast(tr('graphCannotSave')); $('saveStatus').textContent = tr('graphCannotSave'); return; }
   clearTimeout(state.previewTimer);
@@ -1050,4 +1039,5 @@ $('resetCurveBtn').addEventListener('click', () => {
 drawCurve();
 updateValues();
 setLanguage(state.language);
+showPage(location.hash === '#lab' ? 'lab' : 'main');
 log('Ready. Connect to PISKRAFT_DIM.');

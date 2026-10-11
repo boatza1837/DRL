@@ -6,14 +6,15 @@ Mobile-first Web Bluetooth controller for the PISKRAFT DRL ESP32 board.
 
 - Host the files over HTTPS and open the site in a browser with Web Bluetooth support.
 - Connect to `PISKRAFT_DIM` while the motorcycle is parked.
-- The page is a single scrollable view. The five top mode buttons also select the settings shown below: DRL opens DRL settings, Left/Right/Hazard open turn settings, and Welcome opens Welcome settings.
+- The app has two views selected by the tabs below the connection status. The default Board settings view contains only controls whose save commands were found in the Android APK: DRL brightness, opposite-side DRL dimming, fade duration, and Welcome patterns 1–3. Read and Save are here. The `#lab` view contains preview-only controls and tools. The tabs work with browser Back/Forward.
 - Choose Thai or English from the language selector. The choice is saved in this browser.
 - Day, Night, and Rain lighting profiles start with editable values. Tap Preview to load a profile and send a temporary DRL preview if connected; without a board, the screen simulation still runs. Save current settings to a profile to keep them in this browser. This does not persist settings on the board.
 - The motorcycle diagram in the live preview animates left/right/hazard signals, the return fade to DRL, and Welcome. The diagram and light bars also work without a Bluetooth connection. They show requested values, not measured light or board state.
-- Live Preview starts off. Enabling it requires a Bluetooth connection and makes mode and slider changes send temporary commands. Tapping a Welcome pattern or a DRL brightness preset sends a temporary preview even while the switch is off; disconnected previews only animate the screen and show a connection notice. Read from device also checks the connection first.
-- Two collapsed tools sit below the settings. The 30-second light check requires a connected board and runs DRL, Left, Right, Hazard, and a website-streamed Welcome preview for six seconds each at 70% test brightness. The rider records what actually lights at each step. It does not verify startup persistence or treat a successful BLE write as proof that a lamp lit.
+- In Board settings, DRL presets and Welcome patterns select values for Save and do not trigger previews. Live Preview is on the Experiments view; it starts off and requires a Bluetooth connection. Switching back to Board settings stops an active preview. Read from device checks the connection first.
+- Entering Experiments snapshots the Board settings values. The Experiments view has separate DRL, opposite-side DRL, and fade sliders for editing browser profiles and previews. Returning restores the Board settings values, so a lab preview cannot silently change what Save sends.
+- Two collapsed tools sit on the Experiments view. The 30-second light check requires a connected board and runs DRL, Left, Right, Hazard, and a website-streamed Welcome preview for six seconds each at 70% test brightness. The rider records what actually lights at each step. It does not verify startup persistence or treat a successful BLE write as proof that a lamp lit.
 - Rhythm lights offer 80/120 BPM shortcuts, a 60–160 BPM slider, and three left/right beat patterns. They simulate offline or send alternating preview commands while connected, stop after 30 seconds, and do not save to the board. Timing on the real board depends on BLE latency and how its firmware handles preview commands. The known protocol cannot address front and rear lights separately.
-- The turn-signal panel has a separate 60–160 BPM control for its on-screen Left/Right/Hazard blink animation. Its 15-second test requires a connected board and alternates the known `PREVIEW,LEFT/RIGHT/HAZARD` command between configured turn brightness and zero. This is an experiment: the relay or firmware may impose its own blink timing, Bluetooth writes may add delay, and the BPM is kept only in browser storage. Save to device does not include a speed command.
+- The experimental turn-signal BPM control was removed. The independent rhythm tool still offers adjustable BPM for preview-only patterns; it does not set or save the vehicle relay timing.
 
 ## BLE behavior
 
@@ -29,7 +30,7 @@ CFG,ANIM,<0 fade-in | 1 pulse | 2 flash>
 SAVE
 ```
 
-`fadeDurationMs` belongs to the APK's `drl` configuration, but the website places the control beside turn-signal settings to match the requested fade back to DRL after a signal ends. The screen simulation uses this duration, up to 5 seconds. The site sends `CFG,FADE,<ms>` on Save, but its physical effect after a turn signal ends remains unverified without the board. The APK includes turn brightness and DRL fade-start brightness in its configuration model, but its BLE save path does not send separate commands for those values. Turn brightness on this page is preview only.
+`fadeDurationMs` belongs to the APK's `drl` configuration. The website places it with opposite-side DRL dimming on the Board settings view and sends `CFG,FADE,<ms>` on Save. Its physical effect after a turn signal ends remains unverified without the board. The APK includes turn brightness and DRL fade-start brightness in its configuration model, but its BLE save path does not send separate commands for those values. Turn brightness is on the Experiments view for preview only.
 
 Welcome presets 1–3 use the APK's save commands. A successful BLE write only shows that the commands were sent. Confirm persistence by reading the board response and power cycling the board. The website does not claim that the firmware stored the selection without that test.
 

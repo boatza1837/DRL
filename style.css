@@ -35,6 +35,12 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 .vehicle-preview svg{display:block;width:100%;height:125px;filter:drop-shadow(0 5px 14px #0008)}
 .vehicle-preview small{display:block;color:#91a3b6;font-size:10px;margin:1px 0 3px}
 .status{gap:10px;margin:15px 0 24px;padding:12px 14px;background:#111b29;border:1px solid #233247;border-radius:15px}
+.page-nav{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 16px}
+.page-nav a{display:block;padding:12px 8px;border:1px solid #37455c;border-radius:13px;background:#192539;color:#e2eaf2;text-align:center;text-decoration:none;font-size:12px;font-weight:800}
+.page-nav a[aria-current=page]{background:#f1b767;border-color:#f1b767;color:#19150e}
+.page-nav a:focus-visible{outline:2px solid #ffcd7f;outline-offset:3px}
+.notice.page-notice{margin-bottom:14px}
+.main-setting{margin-top:13px}
 .status-icon{color:#ffbe60;font-size:19px}
 .status-copy{flex:1;min-width:0}
 .status strong{display:block;font-size:12px}
