@@ -6,6 +6,7 @@ const TX = '6e400003-b5a3-f393-e0a9-e50e24dcca9e';
 const $ = id => document.getElementById(id);
 const clamp = (n, min, max) => Math.max(min, Math.min(max, n));
 const pwm = percent => Math.round(clamp(Number(percent), 0, 100) * 255 / 100);
+const percentFromPwm = value => Math.round(clamp(Number(value), 0, 255) * 100 / 255);
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 const defaultCurve = [0, 100, 25, 85, 20, 100];
 const defaultProfiles = {
@@ -88,8 +89,8 @@ const translations = {
     dimReadbackMatch:value => `บอร์ดอ่านค่า DIM กลับได้ ${value}% ตรงกับที่ส่ง แต่ต้องลองปิดเปิดบอร์ดและทดสอบไฟเลี้ยวจริง`,
     dimReadbackMismatch:(wanted, got) => `ค่า DIM ไม่ตรง: ส่ง ${wanted}% แต่อ่านจากบอร์ดได้ ${got}% กรุณาคัดลอกบันทึกคำสั่ง`,
     dimReadbackMissing:'ยังไม่ได้ค่า DIM กลับจากบอร์ด จึงยืนยันการบันทึกไม่ได้ กรุณาคัดลอกบันทึกคำสั่ง',
-    resetConfirm:'คืนค่าโรงงาน? การตั้งค่าปัจจุบันอาจถูกลบ',
-    resetAgain:'ยืนยันอีกครั้งว่าจะส่ง RESET ไปยังบอร์ด',
+    resetConfirm:'คืนค่าโรงงาน? คำสั่ง RESET อาจลบค่า DRL และ DIM ที่บันทึกไว้ ห้ามกดระหว่างทดสอบว่าค่ายังคงอยู่หลังเปิดเครื่องใหม่',
+    resetAgain:'ยืนยันว่าจะส่ง RESET ไปยังบอร์ดและยกเลิกการตั้งค่าที่บันทึกไว้',
     logCopied:'คัดลอกบันทึกแล้ว', copyFailed:'คัดลอกบันทึกไม่ได้',
     noDevice:'ยังไม่ต่อบอร์ด แสดงภาพจำลองบนจอเท่านั้น',
     liveNeedsDevice:'ต่อบอร์ดก่อนเปิด Live Preview',
@@ -184,8 +185,8 @@ const translations = {
     dimReadbackMatch:value => `Board readback reports DIM ${value}%, matching the request. Power-cycle the board and test the real turn signal.`,
     dimReadbackMismatch:(wanted, got) => `DIM mismatch: sent ${wanted}%, board reports ${got}%. Please copy the command log.`,
     dimReadbackMissing:'No DIM readback received, so saving is unverified. Please copy the command log.',
-    resetConfirm:'Restore factory defaults? Current settings may be erased.',
-    resetAgain:'Final confirmation: send RESET to the board?',
+    resetConfirm:'Restore factory defaults? RESET may erase saved DRL and DIM values. Do not use it while testing persistence after a power cycle.',
+    resetAgain:'Confirm sending RESET to the board and discarding saved settings.',
     logCopied:'Log copied', copyFailed:'Could not copy log',
     noDevice:'No board connected; showing the on-screen simulation only',
     liveNeedsDevice:'Connect the board before enabling Live Preview',
@@ -358,6 +359,7 @@ async function connect() {
     log('Connected to ' + (device.name || 'PISKRAFT'));
     $('saveStatus').textContent = tr('saveWarning');
     toast(tr('connectedToast') + (device.name || 'PISKRAFT'));
+    await send('REQ');
   } catch (error) {
     log('Connect failed: ' + error.message);
     toast(error.message || tr('unavailable'));
@@ -391,18 +393,20 @@ function checkDimReadback(raw) {
   const pending = state.pendingDimReadback;
   if (!pending) return;
   const config = raw.config && typeof raw.config === 'object' ? raw.config : raw;
-  const reportedValue = config.turnSignal?.oppositeSideBrightness;
+  const flat = config.dim != null;
+  const reportedValue = flat ? config.dim : config.turnSignal?.oppositeSideBrightness;
   if (reportedValue == null) return;
   const value = Number(reportedValue);
-  if (!Number.isFinite(value) || value < 0 || value > 100) return;
+  if (!Number.isFinite(value) || value < 0 || value > (flat ? 255 : 100)) return;
   clearTimeout(pending.timer);
   state.pendingDimReadback = null;
-  const reported = Math.round(value);
-  const message = Math.abs(value - pending.expected) <= 1
+  const reported = flat ? percentFromPwm(value) : Math.round(value);
+  const matches = flat ? Math.abs(value - pending.expectedPwm) <= 1 : Math.abs(value - pending.expected) <= 1;
+  const message = matches
     ? tr('dimReadbackMatch')(reported)
     : tr('dimReadbackMismatch')(pending.expected, reported);
   $('saveStatus').textContent = message;
-  log('DIM readback: requested ' + pending.expected + '%, board reported ' + value + '%');
+  log('DIM readback: requested ' + pending.expected + '% (PWM ' + pending.expectedPwm + '), board reported ' + reported + '%' + (flat ? ' (PWM ' + value + ')' : ''));
   toast(message);
 }
 function applyConfig(raw) {
@@ -416,11 +420,17 @@ function applyConfig(raw) {
   if (config.drl?.brightness != null) setPercent('drl', config.drl.brightness);
   if (config.turnSignal?.brightness != null) setPercent('turnBrightness', config.turnSignal.brightness);
   if (config.turnSignal?.oppositeSideBrightness != null) setPercent('opposite', config.turnSignal.oppositeSideBrightness);
+  if (config.drl != null && typeof config.drl !== 'object' && Number.isFinite(Number(config.drl))) setPercent('drl', percentFromPwm(config.drl));
+  if (config.dim != null && Number.isFinite(Number(config.dim))) setPercent('opposite', percentFromPwm(config.dim));
   if (config.drl?.fadeDurationMs != null && Number.isFinite(Number(config.drl.fadeDurationMs))) {
     $('fadeDuration').value = String(clamp(Math.round(Number(config.drl.fadeDurationMs) / 100) * 100, 100, 5000));
     loaded = true;
   }
-  const pattern = config.startupAnimation?.pattern;
+  if (config.fade != null && Number.isFinite(Number(config.fade))) {
+    $('fadeDuration').value = String(clamp(Math.round(Number(config.fade) / 100) * 100, 100, 5000));
+    loaded = true;
+  }
+  const pattern = config.startupAnimation?.pattern || ({0:'fade-in', 1:'pulse', 2:'flash'})[config.anim];
   if (['fade-in','pulse','flash'].includes(pattern)) { selectWelcome(pattern); loaded = true; }
   updateValues();
   return loaded;
@@ -1047,7 +1057,7 @@ $('saveBtn').addEventListener('click', async () => {
     $('saveStatus').textContent = tr('dimReadbackMissing');
     toast(tr('dimReadbackMissing'));
   }, 5000);
-  state.pendingDimReadback = {expected, timer};
+  state.pendingDimReadback = {expected, expectedPwm:pwm(expected), timer};
   if (!await send('REQ')) {
     clearTimeout(timer);
     state.pendingDimReadback = null;
