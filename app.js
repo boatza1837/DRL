@@ -55,7 +55,7 @@ const translations = {
     welcomeHint:'แตะรูปแบบเพื่อทดลองกับบอร์ดที่เชื่อมต่อ แบบ 1–3 บันทึกได้ ส่วนแบบอื่นทดลองได้ขณะเชื่อมต่อ',
     fadeIn:'ค่อย ๆ สว่าง', fadeInHint:'สว่างขึ้นอย่างนุ่มนวล',
     pulse:'เต้นเป็นจังหวะ', pulseHint:'สว่างและหรี่เป็นจังหวะ',
-    flash:'กะพริบ', flashHint:'กะพริบก่อนสว่างค้าง',
+    flash:'กะพริบ', flashHint:'ค่อย ๆ สว่างสองครั้ง แล้วติดค้าง',
     custom:'กำหนดเอง', customHint:'วาดกราฟความสว่าง',
     softWave:'คลื่นนุ่ม', softWaveHint:'สว่างขึ้นสองระลอก',
     doubleFlash:'แฟลชคู่', doubleFlashHint:'กะพริบสองครั้งแล้วค่อยสว่าง',
@@ -151,7 +151,7 @@ const translations = {
     welcomeHint:'Tap a pattern to preview on a connected board. Modes 1–3 can be saved; the others run only while connected.',
     fadeIn:'Fade in', fadeInHint:'Gradually brightens',
     pulse:'Pulse', pulseHint:'Brightens and dims in a rhythm',
-    flash:'Flash', flashHint:'Flashes, then stays on',
+    flash:'Flash', flashHint:'Two gradual rises, then stays on',
     custom:'Custom', customHint:'Draw a brightness curve',
     softWave:'Soft wave', softWaveHint:'Two smooth waves of light',
     doubleFlash:'Double flash', doubleFlashHint:'Two flashes, then a gentle rise',
@@ -670,9 +670,10 @@ function welcomeLevels(time) {
   if (state.welcome === 'custom') level = curveValue(time);
   else if (state.welcome === 'fade-in') level = full * Math.min(1, time / 2);
   else if (state.welcome === 'pulse') level = time >= 4.5 ? full : full * (0.25 + 0.75 * (1 - Math.cos(Math.PI * 2 * time / 1.5)) / 2);
+  else if (state.welcome === 'flash') level = full * samplePattern([[0,0],[0.85,1],[1.35,0.08],[2.25,1],[5,1]], time);
   else if (state.welcome === 'soft-wave') level = full * samplePattern([[0,0],[0.9,0.85],[1.7,0.25],[2.9,1],[3.7,0.5],[5,1]], time);
   else if (state.welcome === 'double-flash') level = full * samplePattern([[0,0],[0.15,1],[0.4,0],[0.65,1],[0.95,0],[3.2,1],[5,1]], time);
-  else level = time < 2.5 && Math.floor(time * 3) % 2 ? full : time < 2.5 ? 0 : full;
+  else level = full;
   return [level, level];
 }
 async function previewWelcome(sendToBoard = true) {
