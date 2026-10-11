@@ -22,7 +22,7 @@ const translations = {
     mainPageHint:'การตั้งค่าด้านล่างมีคำสั่ง CFG และ SAVE ใน APK ส่วนพรีวิวไฟด้านบนเป็นการทดลองชั่วคราว การส่งคำสั่งสำเร็จยังไม่ยืนยันว่าบอร์ดจำค่า ต้องอ่านกลับหรือทดสอบเปิดเครื่องใหม่',
     labPageTitle:'ห้องทดลองพรีวิว', labPageHint:'ฟีเจอร์หน้านี้ไม่บันทึกลงบอร์ด ค่าบางอย่างจำได้เฉพาะในเบราว์เซอร์และต้องเปิดเว็บเพื่อเล่นพรีวิว ค่าที่เลือกทดลองจะไม่เปลี่ยนค่าหน้าตั้งค่าบอร์ด',
     selectThenSave:'เลือกแล้วกดบันทึก', turnSaveTitle:'ค่า DIM และ FADE ของ DRL',
-    oppositeSaveHint:'บันทึกด้วย CFG,DIM; ผลจริงขณะเลี้ยวต้องตรวจที่รถ',
+    oppositeSaveHint:'ค่านี้คือความสว่างจริงของ DRL อีกฝั่งขณะเลี้ยว (ไม่ใช่เปอร์เซ็นต์ที่หรี่จากค่า DRL) บันทึกด้วย CFG,DIM; ต้องอ่านกลับและลองปิดเปิดบอร์ด',
     welcomeSaveTitle:'Welcome ที่มีคำสั่งบันทึก', welcomeSaveHint:'เลือกแบบ 1–3 แล้วกดบันทึกลงบอร์ด',
     previewSettings:'ค่าพรีวิว', profileAdjustTitle:'ปรับโปรไฟล์ทดลอง',
     profileAdjustHint:'ปรับค่าพรีวิวในห้องทดลองได้ โดยไม่เปลี่ยนค่าที่จะบันทึกในหน้าตั้งค่าบอร์ด',
@@ -84,6 +84,10 @@ const translations = {
     saveConfirmEnd:'\n\nตั้งค่าขณะจอดรถเท่านั้น การส่งคำสั่งยังไม่ยืนยันว่าบอร์ดบันทึกสำเร็จ',
     saveFailed:'หยุดการบันทึกเพราะส่งคำสั่งไม่สำเร็จ',
     saveSent:'ส่งคำสั่งบันทึกแล้ว กำลังขอค่าอ่านกลับ; โปรดทดสอบเปิดเครื่องใหม่',
+    saveChecking:'ส่งคำสั่ง SAVE แล้ว กำลังรอบอร์ดบันทึกและอ่านค่า DIM กลับ',
+    dimReadbackMatch:value => `บอร์ดอ่านค่า DIM กลับได้ ${value}% ตรงกับที่ส่ง แต่ต้องลองปิดเปิดบอร์ดและทดสอบไฟเลี้ยวจริง`,
+    dimReadbackMismatch:(wanted, got) => `ค่า DIM ไม่ตรง: ส่ง ${wanted}% แต่อ่านจากบอร์ดได้ ${got}% กรุณาคัดลอกบันทึกคำสั่ง`,
+    dimReadbackMissing:'ยังไม่ได้ค่า DIM กลับจากบอร์ด จึงยืนยันการบันทึกไม่ได้ กรุณาคัดลอกบันทึกคำสั่ง',
     resetConfirm:'คืนค่าโรงงาน? การตั้งค่าปัจจุบันอาจถูกลบ',
     resetAgain:'ยืนยันอีกครั้งว่าจะส่ง RESET ไปยังบอร์ด',
     logCopied:'คัดลอกบันทึกแล้ว', copyFailed:'คัดลอกบันทึกไม่ได้',
@@ -114,7 +118,7 @@ const translations = {
     mainPageHint:'The settings below have CFG and SAVE commands in the APK. The lighting preview above is temporary. A successful write does not prove the board stored settings; read them back or power-cycle the board.',
     labPageTitle:'Preview experiments', labPageHint:'Features here are not saved to the board. Some values are kept only in this browser, and previews require the website to be open. Experiment choices do not change the Board settings values.',
     selectThenSave:'Select, then save', turnSaveTitle:'DRL DIM and FADE settings',
-    oppositeSaveHint:'Saved with CFG,DIM; check the actual behavior on the vehicle.',
+    oppositeSaveHint:'This is the other DRL side’s actual brightness during a turn, not a percentage reduction from DRL. Saved with CFG,DIM; read it back and power-cycle the board.',
     welcomeSaveTitle:'Welcome with save commands', welcomeSaveHint:'Choose pattern 1–3, then save to the board.',
     previewSettings:'Preview settings', profileAdjustTitle:'Adjust experimental profile',
     profileAdjustHint:'Adjust preview values in Experiments without changing what Board settings will save.',
@@ -176,6 +180,10 @@ const translations = {
     saveConfirmEnd:'\n\nConfigure only while parked. Sending commands does not confirm they were stored.',
     saveFailed:'Save stopped because a command failed',
     saveSent:'Save commands sent. Requesting readback; power-cycle the board to verify.',
+    saveChecking:'SAVE sent. Waiting for the board to store settings, then reading DIM back.',
+    dimReadbackMatch:value => `Board readback reports DIM ${value}%, matching the request. Power-cycle the board and test the real turn signal.`,
+    dimReadbackMismatch:(wanted, got) => `DIM mismatch: sent ${wanted}%, board reports ${got}%. Please copy the command log.`,
+    dimReadbackMissing:'No DIM readback received, so saving is unverified. Please copy the command log.',
     resetConfirm:'Restore factory defaults? Current settings may be erased.',
     resetAgain:'Final confirmation: send RESET to the board?',
     logCopied:'Log copied', copyFailed:'Could not copy log',
@@ -243,7 +251,8 @@ const state = {
   page:'main', mainSnapshot:null, mode: 'DRL', setting: 'drl', welcome: 'fade-in', lastSavableWelcome:'fade-in', curve: storedCurve(),
   welcomeDuration: storedWelcomeDuration(), lastLevels:[50,50], returnFromTurn:null,
   selectedPoint: 0, previewTimer: null, welcomeRun: 0, visualTimer: null, blinkOn: true,
-  profiles: storedProfiles(), activeProfile: null, config: null
+  profiles: storedProfiles(), activeProfile: null, config: null,
+  pendingDimReadback: null, rxJsonBuffer: ''
 };
 const testSteps = [
   {name:'drl', mode:'DRL', expected:'both'},
@@ -299,6 +308,12 @@ function setLanguage(language) {
 function stopWelcome() { state.welcomeRun++; }
 function disconnected() {
   const wasConnected = state.connected;
+  if (state.pendingDimReadback) {
+    clearTimeout(state.pendingDimReadback.timer);
+    state.pendingDimReadback = null;
+    $('saveStatus').textContent = tr('dimReadbackMissing');
+  }
+  state.rxJsonBuffer = '';
   stopActiveTool(false);
   stopWelcome();
   clearTimeout(state.previewTimer);
@@ -358,13 +373,37 @@ function onNotification(event) {
   const bytes = new Uint8Array(view.buffer, view.byteOffset, view.byteLength);
   const message = new TextDecoder().decode(bytes).trim();
   log('RX ← ' + message);
-  if (!message.startsWith('{')) return;
+  if (state.rxJsonBuffer) state.rxJsonBuffer += message;
+  else if (message.startsWith('{')) state.rxJsonBuffer = message;
+  else return;
   try {
-    const config = JSON.parse(message);
+    const config = JSON.parse(state.rxJsonBuffer);
+    state.rxJsonBuffer = '';
     state.config = config;
     if (applyConfig(config)) toast(tr('configLoaded'));
     else toast(tr('configReceived'));
-  } catch { /* A partial or non-JSON notification is still visible in the log. */ }
+    checkDimReadback(config);
+  } catch {
+    if (state.rxJsonBuffer.length > 8192) state.rxJsonBuffer = '';
+  }
+}
+function checkDimReadback(raw) {
+  const pending = state.pendingDimReadback;
+  if (!pending) return;
+  const config = raw.config && typeof raw.config === 'object' ? raw.config : raw;
+  const reportedValue = config.turnSignal?.oppositeSideBrightness;
+  if (reportedValue == null) return;
+  const value = Number(reportedValue);
+  if (!Number.isFinite(value) || value < 0 || value > 100) return;
+  clearTimeout(pending.timer);
+  state.pendingDimReadback = null;
+  const reported = Math.round(value);
+  const message = Math.abs(value - pending.expected) <= 1
+    ? tr('dimReadbackMatch')(reported)
+    : tr('dimReadbackMismatch')(pending.expected, reported);
+  $('saveStatus').textContent = message;
+  log('DIM readback: requested ' + pending.expected + '%, board reported ' + value + '%');
+  toast(message);
 }
 function applyConfig(raw) {
   const config = raw.config && typeof raw.config === 'object' ? raw.config : raw;
@@ -987,18 +1026,33 @@ $('saveBtn').addEventListener('click', async () => {
   clearTimeout(state.previewTimer);
   stopWelcome();
   const animation = {'fade-in':0, pulse:1, flash:2}[state.welcome];
+  const expected = Number($('opposite').value);
   const commands = [
     'CFG,DRL,' + pwm($('drl').value),
-    'CFG,DIM,' + pwm($('opposite').value),
+    'CFG,DIM,' + pwm(expected),
     'CFG,FADE,' + $('fadeDuration').value,
     'CFG,ANIM,' + animation,
     'SAVE'
   ];
   if (!confirm(tr('saveConfirm') + commands.join('\n') + tr('saveConfirmEnd'))) return;
-  if (!await enqueue(commands, 95)) { toast(tr('saveFailed')); return; }
-  $('saveStatus').textContent = tr('saveSent');
-  toast(tr('saveSent'));
-  await send('REQ');
+  if (state.pendingDimReadback) clearTimeout(state.pendingDimReadback.timer);
+  state.pendingDimReadback = null;
+  if (!await enqueue(commands, 200)) { toast(tr('saveFailed')); return; }
+  $('saveStatus').textContent = tr('saveChecking');
+  await delay(400);
+  if (!state.connected) { $('saveStatus').textContent = tr('dimReadbackMissing'); return; }
+  const timer = setTimeout(() => {
+    if (state.pendingDimReadback?.timer !== timer) return;
+    state.pendingDimReadback = null;
+    $('saveStatus').textContent = tr('dimReadbackMissing');
+    toast(tr('dimReadbackMissing'));
+  }, 5000);
+  state.pendingDimReadback = {expected, timer};
+  if (!await send('REQ')) {
+    clearTimeout(timer);
+    state.pendingDimReadback = null;
+    $('saveStatus').textContent = tr('dimReadbackMissing');
+  }
 });
 $('resetBtn').addEventListener('click', async () => {
   if (!state.connected) { toast(tr('connectFirst')); return; }
