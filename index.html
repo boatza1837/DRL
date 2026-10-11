@@ -17,9 +17,39 @@
     <div class="hero"><div class="overline">WIRELESS LIGHTING SYSTEM · V1.1</div><div class="hero-title">Ride in <span>light.</span></div><div class="bike"><svg viewBox="0 0 420 130" role="img" aria-label="Motorcycle front lights" data-i18n-aria="motorcycleLights"><defs><linearGradient id="metal" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#48627b"/><stop offset="1" stop-color="#162435"/></linearGradient></defs><path d="M111 104 L145 36 Q211 9 277 36 L307 104 L260 116 L236 76 H185 L160 116Z" fill="url(#metal)" stroke="#47627c" stroke-width="2"/><path d="M148 40 L201 17 L220 17 L271 40 L245 48 H174Z" fill="#182638" stroke="#5c7186"/><path id="leftBeam" d="M160 58 L200 49 L185 73 L134 85Z" class="glow"/><path id="rightBeam" d="M260 58 L220 49 L235 73 L286 85Z" class="glow"/><path d="M195 80 L225 80 L235 117 L186 117Z" fill="#0a111c" stroke="#46576b"/><path d="M112 104 L70 117 M307 104 L352 117" stroke="#64768b" stroke-width="5" stroke-linecap="round"/></svg></div><div class="hero-footer" data-i18n="visualSimulation">ภาพจำลองไฟ • ไม่ใช่สถานะจริงจากบอร์ด</div></div>
     <div class="status"><div class="status-icon" aria-hidden="true">ᛒ</div><div class="status-copy"><strong id="deviceName">ยังไม่เชื่อมต่ออุปกรณ์</strong><small id="deviceDetails">ต้องเชื่อมต่อ Bluetooth</small></div><button class="connect" id="connectBtn">เชื่อมต่อ</button></div>
     <nav class="page-nav" aria-label="หน้าแอป" data-i18n-aria="pageNavigation"><a href="#main" data-page-link="main" aria-current="page" data-i18n="mainPageTab">ตั้งค่าบอร์ด</a><a href="#lab" data-page-link="lab" data-i18n="labPageTab">ห้องทดลอง</a></nav>
+    <section aria-labelledby="previewTitle">
+      <div class="section-header"><h2 id="previewTitle" data-i18n="livePreview">พรีวิวไฟ</h2><span id="topState">ออฟไลน์</span></div>
+      <div class="panel stack">
+        <p class="sub" data-i18n="previewHint">เลือกโหมดเพื่อทดลองไฟทันที</p>
+        <div class="vehicle-preview">
+          <svg viewBox="0 0 420 130" role="img" aria-label="ภาพจำลองไฟหน้ารถจักรยานยนต์" data-i18n-aria="motorcycleLights">
+            <path d="M111 104 L145 36 Q211 9 277 36 L307 104 L260 116 L236 76 H185 L160 116Z" fill="#22364a" stroke="#587088" stroke-width="2"/>
+            <path d="M148 40 L201 17 L220 17 L271 40 L245 48 H174Z" fill="#182638" stroke="#5c7186"/>
+            <path d="M160 58 L200 49 L185 73 L134 85Z" class="glow" data-beam="left"/>
+            <path d="M260 58 L220 49 L235 73 L286 85Z" class="glow" data-beam="right"/>
+            <path d="M195 80 L225 80 L235 117 L186 117Z" fill="#0a111c" stroke="#46576b"/>
+            <path d="M112 104 L70 117 M307 104 L352 117" stroke="#64768b" stroke-width="5" stroke-linecap="round"/>
+          </svg>
+          <small data-i18n="visualSimulation">ภาพจำลองไฟ • ไม่ใช่สถานะจริงจากบอร์ด</small>
+        </div>
+        <div class="modes" id="modes">
+          <button class="mode active" data-mode="DRL" aria-pressed="true"><span class="symbol">☀</span><span data-i18n="drl">DRL</span></button>
+          <button class="mode" data-mode="LEFT" aria-pressed="false"><span class="symbol">⇦</span><span data-i18n="left">ซ้าย</span></button>
+          <button class="mode" data-mode="RIGHT" aria-pressed="false"><span class="symbol">⇨</span><span data-i18n="right">ขวา</span></button>
+          <button class="mode" data-mode="HAZARD" aria-pressed="false"><span class="symbol">⚠</span><span data-i18n="hazard">ฉุกเฉิน</span></button>
+          <button class="mode" data-mode="ANIMATION" aria-pressed="false"><span class="symbol">✦</span><span data-i18n="animation">Welcome</span></button>
+        </div>
+        <div class="light-preview" aria-hidden="true">
+          <div class="light-row"><div class="light-row-label"><span data-i18n="leftLight">ไฟซ้าย</span><strong id="leftLightValue">50%</strong></div><div class="segments" id="leftLight"></div></div>
+          <div class="light-row"><div class="light-row-label"><span data-i18n="rightLight">ไฟขวา</span><strong id="rightLightValue">50%</strong></div><div class="segments" id="rightLight"></div></div>
+        </div>
+        <label class="switchline"><span><strong data-i18n="liveChanges">Live Preview เปิด/ปิด</strong><small data-i18n="liveChangesHint">เปิดแล้วเลือกโหมดหรือเลื่อนสไลเดอร์จะส่งไปบอร์ดทันที</small></span><span class="switch"><input type="checkbox" id="live"><i></i></span></label>
+      </div>
+    </section>
+
     <div id="mainPage">
       <div class="section-header"><h2 data-i18n="mainPageTitle">ค่าที่มีคำสั่งบันทึก</h2><span data-i18n="apkSupported">ตาม APK</span></div>
-      <p class="notice page-notice" data-i18n="mainPageHint">หน้านี้มีเฉพาะค่าที่พบคำสั่ง CFG และ SAVE ใน APK การส่งคำสั่งสำเร็จยังไม่ยืนยันว่าบอร์ดจำค่า ต้องอ่านกลับหรือทดสอบเปิดเครื่องใหม่</p>
+      <p class="notice page-notice" data-i18n="mainPageHint">การตั้งค่าด้านล่างมีคำสั่ง CFG และ SAVE ใน APK ส่วนพรีวิวไฟด้านบนเป็นการทดลองชั่วคราว การส่งคำสั่งสำเร็จยังไม่ยืนยันว่าบอร์ดจำค่า ต้องอ่านกลับหรือทดสอบเปิดเครื่องใหม่</p>
       <section class="panel stack setting-panel" id="drlPanel" role="region" aria-labelledby="drlSettingsTitle">
         <h3 id="drlSettingsTitle" data-i18n="drlSettings">ตั้งค่า DRL</h3>
         <div class="field"><label for="drl"><span data-i18n="drlBrightness">ความสว่าง DRL</span> <strong class="value" id="drlNumber">50%</strong></label><input type="range" id="drl" min="0" max="100" value="50"><div class="range-ends"><span>0%</span><span>100%</span></div></div>
@@ -60,36 +90,6 @@
           <div class="profile-card" data-profile="rain"><div class="profile-heading"><strong data-i18n="profileRain">ขี่ฝนตก</strong><small id="rainProfileSummary"></small></div><div class="profile-actions"><button class="btn primary" data-profile-preview="rain" data-i18n="previewProfile">▶ ทดลอง</button><button class="btn" data-profile-save="rain" data-i18n="saveProfile">เก็บค่าปัจจุบัน</button></div></div>
         </div>
         <p class="sub" data-i18n="profileDeviceHint">แตะทดลองเพื่อส่งค่าพรีวิวไปบอร์ดเมื่อเชื่อมต่อ หากยังไม่เชื่อมต่อจะจำลองบนจอเท่านั้น โปรไฟล์นี้เก็บในเบราว์เซอร์ ไม่บันทึกลงบอร์ด</p>
-      </div>
-    </section>
-
-    <section aria-labelledby="previewTitle">
-      <div class="section-header"><h2 id="previewTitle" data-i18n="livePreview">พรีวิวไฟ</h2><span id="topState">ออฟไลน์</span></div>
-      <div class="panel stack">
-        <p class="sub" data-i18n="previewHint">เลือกโหมดเพื่อทดลองไฟทันที</p>
-        <div class="vehicle-preview">
-          <svg viewBox="0 0 420 130" role="img" aria-label="ภาพจำลองไฟหน้ารถจักรยานยนต์" data-i18n-aria="motorcycleLights">
-            <path d="M111 104 L145 36 Q211 9 277 36 L307 104 L260 116 L236 76 H185 L160 116Z" fill="#22364a" stroke="#587088" stroke-width="2"/>
-            <path d="M148 40 L201 17 L220 17 L271 40 L245 48 H174Z" fill="#182638" stroke="#5c7186"/>
-            <path d="M160 58 L200 49 L185 73 L134 85Z" class="glow" data-beam="left"/>
-            <path d="M260 58 L220 49 L235 73 L286 85Z" class="glow" data-beam="right"/>
-            <path d="M195 80 L225 80 L235 117 L186 117Z" fill="#0a111c" stroke="#46576b"/>
-            <path d="M112 104 L70 117 M307 104 L352 117" stroke="#64768b" stroke-width="5" stroke-linecap="round"/>
-          </svg>
-          <small data-i18n="visualSimulation">ภาพจำลองไฟ • ไม่ใช่สถานะจริงจากบอร์ด</small>
-        </div>
-        <div class="modes" id="modes">
-          <button class="mode active" data-mode="DRL" aria-pressed="true"><span class="symbol">☀</span><span data-i18n="drl">DRL</span></button>
-          <button class="mode" data-mode="LEFT" aria-pressed="false"><span class="symbol">⇦</span><span data-i18n="left">ซ้าย</span></button>
-          <button class="mode" data-mode="RIGHT" aria-pressed="false"><span class="symbol">⇨</span><span data-i18n="right">ขวา</span></button>
-          <button class="mode" data-mode="HAZARD" aria-pressed="false"><span class="symbol">⚠</span><span data-i18n="hazard">ฉุกเฉิน</span></button>
-          <button class="mode" data-mode="ANIMATION" aria-pressed="false"><span class="symbol">✦</span><span data-i18n="animation">Welcome</span></button>
-        </div>
-        <div class="light-preview" aria-hidden="true">
-          <div class="light-row"><div class="light-row-label"><span data-i18n="leftLight">ไฟซ้าย</span><strong id="leftLightValue">50%</strong></div><div class="segments" id="leftLight"></div></div>
-          <div class="light-row"><div class="light-row-label"><span data-i18n="rightLight">ไฟขวา</span><strong id="rightLightValue">50%</strong></div><div class="segments" id="rightLight"></div></div>
-        </div>
-        <label class="switchline"><span><strong data-i18n="liveChanges">Live Preview เปิด/ปิด</strong><small data-i18n="liveChangesHint">เปิดแล้วเลือกโหมดหรือเลื่อนสไลเดอร์จะส่งไปบอร์ดทันที</small></span><span class="switch"><input type="checkbox" id="live"><i></i></span></label>
       </div>
     </section>
 

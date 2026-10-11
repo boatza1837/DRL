@@ -19,7 +19,7 @@ const translations = {
     language:'ภาษา', motorcycleLights:'ภาพจำลองไฟหน้ารถจักรยานยนต์', curveAccessible:'กราฟความสว่างที่แก้ไขได้',
     pageNavigation:'หน้าแอป', mainPageTab:'ตั้งค่าบอร์ด', labPageTab:'ห้องทดลอง',
     mainPageTitle:'ค่าที่มีคำสั่งบันทึก', apkSupported:'ตาม APK',
-    mainPageHint:'หน้านี้มีเฉพาะค่าที่พบคำสั่ง CFG และ SAVE ใน APK การส่งคำสั่งสำเร็จยังไม่ยืนยันว่าบอร์ดจำค่า ต้องอ่านกลับหรือทดสอบเปิดเครื่องใหม่',
+    mainPageHint:'การตั้งค่าด้านล่างมีคำสั่ง CFG และ SAVE ใน APK ส่วนพรีวิวไฟด้านบนเป็นการทดลองชั่วคราว การส่งคำสั่งสำเร็จยังไม่ยืนยันว่าบอร์ดจำค่า ต้องอ่านกลับหรือทดสอบเปิดเครื่องใหม่',
     labPageTitle:'ห้องทดลองพรีวิว', labPageHint:'ฟีเจอร์หน้านี้ไม่บันทึกลงบอร์ด ค่าบางอย่างจำได้เฉพาะในเบราว์เซอร์และต้องเปิดเว็บเพื่อเล่นพรีวิว ค่าที่เลือกทดลองจะไม่เปลี่ยนค่าหน้าตั้งค่าบอร์ด',
     selectThenSave:'เลือกแล้วกดบันทึก', turnSaveTitle:'ค่า DIM และ FADE ของ DRL',
     oppositeSaveHint:'บันทึกด้วย CFG,DIM; ผลจริงขณะเลี้ยวต้องตรวจที่รถ',
@@ -111,7 +111,7 @@ const translations = {
     language:'Language', motorcycleLights:'Simulated motorcycle front lights', curveAccessible:'Editable brightness curve',
     pageNavigation:'App pages', mainPageTab:'Board settings', labPageTab:'Experiments',
     mainPageTitle:'Settings with save commands', apkSupported:'From the APK',
-    mainPageHint:'This page contains only settings with CFG and SAVE commands found in the APK. A successful write does not prove the board stored them; read them back or power-cycle the board.',
+    mainPageHint:'The settings below have CFG and SAVE commands in the APK. The lighting preview above is temporary. A successful write does not prove the board stored settings; read them back or power-cycle the board.',
     labPageTitle:'Preview experiments', labPageHint:'Features here are not saved to the board. Some values are kept only in this browser, and previews require the website to be open. Experiment choices do not change the Board settings values.',
     selectThenSave:'Select, then save', turnSaveTitle:'DRL DIM and FADE settings',
     oppositeSaveHint:'Saved with CFG,DIM; check the actual behavior on the vehicle.',
@@ -492,6 +492,7 @@ function showPage(page) {
       selectWelcome(state.mainSnapshot.welcome);
       updateValues();
     }
+    selectMode('DRL', false);
   }
   state.page = nextPage;
   $('mainPage').classList.toggle('hidden', nextPage !== 'main');
@@ -918,6 +919,7 @@ document.querySelectorAll('[data-welcome]').forEach(button => button.addEventLis
   selectWelcome(button.dataset.welcome);
   markProfileEdited();
   if (state.page === 'lab') selectMode('ANIMATION', true);
+  else selectMode('ANIMATION', $('live').checked);
 }));
 for (const id of ['drl','turnBrightness','opposite','fadeDuration']) {
   $(id).addEventListener('input', () => { markProfileEdited(); updateValues(); if (id !== 'fadeDuration') schedulePreview(); });
@@ -934,7 +936,7 @@ document.querySelectorAll('[data-preset]').forEach(button => button.addEventList
   $('drl').value = button.dataset.preset;
   markProfileEdited();
   updateValues();
-  if (state.page === 'lab') selectMode('DRL', true);
+  selectMode('DRL', $('live').checked);
 }));
 $('startSelfTest').addEventListener('click', runSelfTest);
 $('stopSelfTest').addEventListener('click', () => stopActiveTool());
