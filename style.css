@@ -54,6 +54,7 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 .mode .symbol{font-size:20px;color:#a6b8ca}
 .mode.active,.welcome-option.active{background:linear-gradient(160deg,#583f24,#282539);color:#ffcf89;border-color:#ad8049}
 .mode.active .symbol{color:#ffc16e}
+.mode[data-mode="ANIMATION"]{grid-column:span 2}
 .light-preview{border:1px solid #28384e;border-radius:15px;background:#0c1522;padding:15px;display:grid;gap:15px}
 .light-row-label{font-size:11px;color:#a9b8c7;margin-bottom:7px}
 .light-row-label strong{color:#f6b762}
@@ -75,9 +76,6 @@ button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visi
 .btn.primary{background:#f1b767;border-color:#f1b767;color:#19150e}
 .btn.danger{border-color:#684352;color:#ffb7bd;background:#302029}
 .btn.ghost{background:transparent}
-.setting-tabs{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
-.setting-tabs button{border:1px solid #35465d;background:#172336;color:#b9c5d3;border-radius:12px;padding:12px 5px;font-weight:700;font-size:12px}
-.setting-tabs button.active{background:#efb666;border-color:#efb666;color:#21180f}
 .setting-panel{margin-top:0}
 .field{display:grid;gap:7px}
 .field label,.curve-editor label{display:flex;justify-content:space-between;gap:10px;color:#dce5ed;font-size:12px;font-weight:700}

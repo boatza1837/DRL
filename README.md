@@ -6,11 +6,11 @@ Mobile-first Web Bluetooth controller for the PISKRAFT DRL ESP32 board.
 
 - Host the files over HTTPS and open the site in a browser with Web Bluetooth support.
 - Connect to `PISKRAFT_DIM` while the motorcycle is parked.
-- The page is a single scrollable view. DRL, turn-signal, and Welcome settings are grouped below the live preview.
+- The page is a single scrollable view. The five top mode buttons also select the settings shown below: DRL opens DRL settings, Left/Right/Hazard open turn settings, and Welcome opens Welcome settings.
 - Choose Thai or English from the language selector. The choice is saved in this browser.
 - Day, Night, and Rain lighting profiles start with editable values. Tap Preview to load a profile and send a temporary DRL preview if connected; without a board, the screen simulation still runs. Save current settings to a profile to keep them in this browser. This does not persist settings on the board.
-- The motorcycle diagram in the live preview animates left/right/hazard signals, DRL fade, and Welcome. The diagram and light bars also work without a Bluetooth connection. They show requested values, not measured light or board state.
-- Live Preview starts off. Enabling it requires a Bluetooth connection and makes mode and slider changes send temporary commands. Explicit Preview buttons send temporary commands even while the switch is off; disconnected previews only animate the screen and show a connection notice. Read from device also checks the connection first.
+- The motorcycle diagram in the live preview animates left/right/hazard signals, the return fade to DRL, and Welcome. The diagram and light bars also work without a Bluetooth connection. They show requested values, not measured light or board state.
+- Live Preview starts off. Enabling it requires a Bluetooth connection and makes mode and slider changes send temporary commands. Tapping a Welcome pattern or a DRL brightness preset sends a temporary preview even while the switch is off; disconnected previews only animate the screen and show a connection notice. Read from device also checks the connection first.
 
 ## BLE behavior
 
@@ -30,9 +30,9 @@ SAVE
 
 Welcome presets 1–3 use the APK's save commands. A successful BLE write only shows that the commands were sent. Confirm persistence by reading the board response and power cycling the board. The website does not claim that the firmware stored the selection without that test.
 
-Welcome previews now stream repeated `PREVIEW,DRL,<brightness>` commands. `PREVIEW,DRL,100` was previously verified on the board; the old `PREVIEW,ANIMATION,<brightness>` path did not light the user's motorcycle. The stream also drives the editable curve for 5–20 seconds and two extra patterns (Soft wave and Double flash). Physical behavior for the new sequences still needs testing with a board.
+Welcome previews stream repeated `PREVIEW,DRL,<brightness>` commands for matching left/right levels. The Side chase, Soft crossfade, and Staggered rise patterns animate each side independently using `PREVIEW,LEFT/RIGHT,<level>,<opposite-level>` when the levels differ. The physical left/right command mapping is swapped as noted above. `PREVIEW,DRL,100` was previously verified on the board; the old `PREVIEW,ANIMATION,<brightness>` path did not light the user's motorcycle. The stream also drives the editable curve for 5–20 seconds and the other patterns (Soft wave and Double flash). Physical behavior for the new sequences still needs testing with a board.
 
-The APK builds a `SET_CONFIG` object with a 5000 ms startup duration and keyframes, but its BLE `writeJson` method actually sends only `CFG,DRL`, `CFG,DIM`, `CFG,FADE`, `CFG,ANIM`, and `SAVE`. It drops the keyframes and custom duration. The site stores the graph and duration in browser storage and blocks board Save for Custom and the two extra patterns. Persisting these at startup requires firmware support; the 5–20 second graph works only while a connected browser is streaming its preview.
+The APK builds a `SET_CONFIG` object with a 5000 ms startup duration and keyframes, but its BLE `writeJson` method actually sends only `CFG,DRL`, `CFG,DIM`, `CFG,FADE`, `CFG,ANIM`, and `SAVE`. It drops the keyframes and custom duration. The site stores the graph and duration in browser storage and blocks board Save for Custom and all five additional patterns. Persisting these at startup requires firmware support; the 5–20 second graph works only while a connected browser is streaming its preview.
 
 The original `PREVIEW,DRL,100` command was tested on the board. Other modes, persistent save, and factory reset still require physical-device verification.
 

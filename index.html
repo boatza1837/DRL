@@ -50,7 +50,6 @@
           <button class="mode" data-mode="LEFT" aria-pressed="false"><span class="symbol">⇦</span><span data-i18n="left">ซ้าย</span></button>
           <button class="mode" data-mode="RIGHT" aria-pressed="false"><span class="symbol">⇨</span><span data-i18n="right">ขวา</span></button>
           <button class="mode" data-mode="HAZARD" aria-pressed="false"><span class="symbol">⚠</span><span data-i18n="hazard">ฉุกเฉิน</span></button>
-          <button class="mode" data-mode="FADE" aria-pressed="false"><span class="symbol">◐</span><span data-i18n="fade">เฟด</span></button>
           <button class="mode" data-mode="ANIMATION" aria-pressed="false"><span class="symbol">✦</span><span data-i18n="animation">Welcome</span></button>
         </div>
         <div class="light-preview" aria-hidden="true">
@@ -58,40 +57,36 @@
           <div class="light-row"><div class="light-row-label"><span data-i18n="rightLight">ไฟขวา</span><strong id="rightLightValue">50%</strong></div><div class="segments" id="rightLight"></div></div>
         </div>
         <label class="switchline"><span><strong data-i18n="liveChanges">Live Preview เปิด/ปิด</strong><small data-i18n="liveChangesHint">เปิดแล้วเลือกโหมดหรือเลื่อนสไลเดอร์จะส่งไปบอร์ดทันที</small></span><span class="switch"><input type="checkbox" id="live"><i></i></span></label>
-        <div class="row"><button class="btn primary" id="previewBtn" data-i18n="previewSelected">▶ พรีวิวที่เลือก</button><button class="btn ghost" id="cancelBtn" data-i18n="stopPreview">■ หยุดพรีวิว</button></div>
       </div>
     </section>
 
     <section aria-labelledby="settingsTitle">
-      <div class="section-header"><h2 id="settingsTitle" data-i18n="lightingSettings">ตั้งค่าไฟ</h2><span data-i18n="chooseSection">เลือกหมวดด้านล่าง</span></div>
-      <div class="setting-tabs" role="tablist" aria-labelledby="settingsTitle">
-        <button id="drlTab" class="active" role="tab" aria-selected="true" aria-controls="drlPanel" data-setting="drl" data-i18n="drl">DRL</button>
-        <button id="turnTab" role="tab" aria-selected="false" aria-controls="turnPanel" data-setting="turn" data-i18n="turn">ไฟเลี้ยว</button>
-        <button id="welcomeTab" role="tab" aria-selected="false" aria-controls="welcomePanel" data-setting="welcome" data-i18n="welcome">Welcome</button>
-      </div>
-      <div class="panel stack setting-panel" id="drlPanel" role="tabpanel" aria-labelledby="drlTab">
-        <h3 data-i18n="drlSettings">ตั้งค่า DRL</h3>
+      <div class="section-header"><h2 id="settingsTitle" data-i18n="lightingSettings">ตั้งค่าไฟ</h2><span data-i18n="chooseSection">ตามโหมดที่เลือกด้านบน</span></div>
+      <div class="panel stack setting-panel" id="drlPanel" role="region" aria-labelledby="drlSettingsTitle">
+        <h3 id="drlSettingsTitle" data-i18n="drlSettings">ตั้งค่า DRL</h3>
         <div class="field"><label for="drl"><span data-i18n="drlBrightness">ความสว่าง DRL</span> <strong class="value" id="drlNumber">50%</strong></label><input type="range" id="drl" min="0" max="100" value="50"><div class="range-ends"><span>0%</span><span>100%</span></div></div>
         <div class="section-header compact"><h3 data-i18n="quickPresets">ค่าความสว่างสำเร็จรูป</h3><span data-i18n="previewOnly">พรีวิวเท่านั้น</span></div>
         <div class="preset-grid"><button class="btn preset" data-preset="25"><strong data-i18n="night">กลางคืน</strong><small>25%</small></button><button class="btn preset" data-preset="100"><strong data-i18n="daylight">กลางวัน</strong><small>100%</small></button><button class="btn preset" data-preset="60"><strong data-i18n="balanced">สมดุล</strong><small>60%</small></button><button class="btn preset" data-preset="0"><strong data-i18n="off">ปิด</strong><small>0%</small></button></div>
       </div>
-      <div class="panel stack setting-panel hidden" id="turnPanel" role="tabpanel" aria-labelledby="turnTab">
-        <h3 data-i18n="turnSettings">ตั้งค่าไฟเลี้ยว</h3>
+      <div class="panel stack setting-panel hidden" id="turnPanel" role="region" aria-labelledby="turnSettingsTitle">
+        <h3 id="turnSettingsTitle" data-i18n="turnSettings">ตั้งค่าไฟเลี้ยว</h3>
         <div class="field"><label for="turnBrightness"><span data-i18n="turnBrightness">ความสว่างไฟเลี้ยว</span> <strong class="value" id="turnNumber">100%</strong></label><input type="range" id="turnBrightness" min="0" max="100" value="100"><p class="sub" data-i18n="turnPreviewOnly">ค่านี้ใช้กับพรีวิวเท่านั้น แอปเดิมไม่มีคำสั่งบันทึกค่านี้แยกต่างหาก</p></div>
         <div class="field"><label for="opposite"><span data-i18n="oppositeBrightness">DRL ฝั่งตรงข้าม</span> <strong class="value" id="oppositeNumber">50%</strong></label><input type="range" id="opposite" min="0" max="100" value="50"><p class="sub" data-i18n="oppositeHint">ความสว่างของอีกฝั่งขณะเปิดไฟเลี้ยวซ้ายหรือขวา</p></div>
         <div class="field"><label for="fadeDuration"><span data-i18n="fadeDuration">เวลา DRL ค่อย ๆ กลับหลังปิดไฟเลี้ยว</span> <strong class="value" id="fadeNumber">5.0 s</strong></label><input type="range" id="fadeDuration" min="100" max="5000" step="100" value="5000"><p class="sub" data-i18n="fadeExplanation">ภาพจำลองจะค่อย ๆ กลับเป็น DRL ในเวลาที่เลือก สูงสุด 5 วินาที เว็บส่ง CFG,FADE ไปบอร์ดเมื่อบันทึก แต่ผลจริงหลังปิดไฟเลี้ยวยังต้องทดสอบกับบอร์ด</p></div>
-        <div class="row"><button class="btn" id="leftPreviewBtn" data-i18n="previewLeft">⇦ ทดลองซ้าย</button><button class="btn" id="rightPreviewBtn" data-i18n="previewRight">ทดลองขวา ⇨</button><button class="btn" id="hazardPreviewBtn" data-i18n="previewHazard">⚠ ฉุกเฉิน</button></div>
       </div>
-      <div class="panel stack setting-panel hidden" id="welcomePanel" role="tabpanel" aria-labelledby="welcomeTab">
-        <h3 data-i18n="welcomeSettings">ไฟต้อนรับตอนเปิดเครื่อง</h3>
-        <p class="sub" data-i18n="welcomeHint">แตะรูปแบบเพื่อทดลองกับบอร์ดที่เชื่อมต่อ แบบ 1–3 มีคำสั่งบันทึก; กราฟและแบบ 5–6 ทดลองขณะเชื่อมต่อเท่านั้น</p>
+      <div class="panel stack setting-panel hidden" id="welcomePanel" role="region" aria-labelledby="welcomeSettingsTitle">
+        <h3 id="welcomeSettingsTitle" data-i18n="welcomeSettings">ไฟต้อนรับตอนเปิดเครื่อง</h3>
+        <p class="sub" data-i18n="welcomeHint">แตะรูปแบบเพื่อทดลองกับบอร์ดที่เชื่อมต่อ แบบ 1–3 บันทึกได้ ส่วนแบบอื่นทดลองได้ขณะเชื่อมต่อ</p>
         <div class="welcome-grid">
           <button class="welcome-option active" data-welcome="fade-in" aria-pressed="true"><span class="welcome-index">1</span><strong data-i18n="fadeIn">ค่อย ๆ สว่าง</strong><small data-i18n="fadeInHint">สว่างขึ้นอย่างนุ่มนวล</small></button>
           <button class="welcome-option" data-welcome="pulse" aria-pressed="false"><span class="welcome-index">2</span><strong data-i18n="pulse">เต้นเป็นจังหวะ</strong><small data-i18n="pulseHint">สว่างและหรี่เป็นจังหวะ</small></button>
           <button class="welcome-option" data-welcome="flash" aria-pressed="false"><span class="welcome-index">3</span><strong data-i18n="flash">กะพริบ</strong><small data-i18n="flashHint">กะพริบก่อนสว่างค้าง</small></button>
-          <button class="welcome-option" data-welcome="custom" aria-pressed="false"><span class="welcome-index">4</span><strong data-i18n="custom">กำหนดเอง</strong><small data-i18n="customHint">วาดกราฟความสว่าง</small></button>
-          <button class="welcome-option" data-welcome="soft-wave" aria-pressed="false"><span class="welcome-index">5</span><strong data-i18n="softWave">คลื่นนุ่ม</strong><small data-i18n="softWaveHint">สว่างขึ้นสองระลอก</small></button>
-          <button class="welcome-option" data-welcome="double-flash" aria-pressed="false"><span class="welcome-index">6</span><strong data-i18n="doubleFlash">แฟลชคู่</strong><small data-i18n="doubleFlashHint">กะพริบสองครั้งแล้วค่อยสว่าง</small></button>
+          <button class="welcome-option" data-welcome="soft-wave" aria-pressed="false"><span class="welcome-index">4</span><strong data-i18n="softWave">คลื่นนุ่ม</strong><small data-i18n="softWaveHint">สว่างขึ้นสองระลอก</small></button>
+          <button class="welcome-option" data-welcome="double-flash" aria-pressed="false"><span class="welcome-index">5</span><strong data-i18n="doubleFlash">แฟลชคู่</strong><small data-i18n="doubleFlashHint">กะพริบสองครั้งแล้วค่อยสว่าง</small></button>
+          <button class="welcome-option" data-welcome="side-chase" aria-pressed="false"><span class="welcome-index">6</span><strong data-i18n="sideChase">วิ่งสลับซ้ายขวา</strong><small data-i18n="sideChaseHint">ไฟไล่ทีละข้างแล้วสว่างพร้อมกัน</small></button>
+          <button class="welcome-option" data-welcome="crossfade" aria-pressed="false"><span class="welcome-index">7</span><strong data-i18n="crossfade">สลับละมุน</strong><small data-i18n="crossfadeHint">สองข้างสว่างสลับกันอย่างนุ่มนวล</small></button>
+          <button class="welcome-option" data-welcome="staggered" aria-pressed="false"><span class="welcome-index">8</span><strong data-i18n="staggered">เปิดทีละข้าง</strong><small data-i18n="staggeredHint">ซ้ายก่อน ขวาตาม แล้วสว่างค้าง</small></button>
+          <button class="welcome-option" data-welcome="custom" aria-pressed="false"><span class="welcome-index">9</span><strong data-i18n="custom">กำหนดเอง</strong><small data-i18n="customHint">วาดกราฟความสว่าง</small></button>
         </div>
         <div id="curveEditor" class="curve-editor hidden">
           <div class="curve-heading"><strong data-i18n="curveTitle">กราฟความสว่าง</strong><span id="curveAxes">เวลา 0–5 วินาที · ความสว่าง 0–100%</span></div>
