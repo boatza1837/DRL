@@ -59,7 +59,7 @@
       <section class="panel stack setting-panel main-setting" aria-labelledby="turnSaveTitle">
         <h3 id="turnSaveTitle" data-i18n="turnSaveTitle">ค่า DIM และ FADE ของ DRL</h3>
         <div class="field"><label for="opposite"><span data-i18n="oppositeBrightness">DRL ฝั่งตรงข้าม</span> <strong class="value" id="oppositeNumber">50%</strong></label><input type="range" id="opposite" min="0" max="100" value="50"><p class="sub" data-i18n="oppositeSaveHint">บันทึกด้วย CFG,DIM; ผลจริงขณะเลี้ยวต้องตรวจที่รถ</p></div>
-        <div class="field"><label for="fadeDuration"><span data-i18n="fadeDuration">ระยะเวลาเฟด DRL</span> <strong class="value" id="fadeNumber">5.0 s</strong></label><input type="range" id="fadeDuration" min="100" max="5000" step="100" value="5000"><p class="sub" data-i18n="fadeExplanation">บันทึกด้วย CFG,FADE (0.1–5 วินาที) ตาม APK ต้องทดสอบกับบอร์ดว่าเฟดมีผลช่วงไหน และค่ายังคงอยู่หลังเปิดเครื่องใหม่หรือไม่</p></div>
+        <div class="field"><label for="fadeDuration"><span data-i18n="fadeDuration">เฟดกลับหลังปิดไฟเลี้ยว</span> <strong class="value" id="fadeNumber">1.3 s</strong></label><input type="range" id="fadeDuration" min="100" max="5000" step="100" value="1300"><p class="sub" data-i18n="fadeExplanation">หลังปิดไฟเลี้ยว DRL จะค่อย ๆ สว่างกลับ ค่าโรงงาน 1.3 วินาทีใช้ได้จริง กดบันทึกทั้งหมดเมื่อต้องการเปลี่ยนค่านี้</p></div>
       </section>
       <section class="panel stack setting-panel main-setting" aria-labelledby="welcomeSaveTitle">
         <h3 id="welcomeSaveTitle" data-i18n="welcomeSaveTitle">Welcome ที่มีคำสั่งบันทึก</h3>
@@ -71,7 +71,9 @@
         </div>
       </section>
       <div class="panel stack save-panel">
-        <div class="row"><button class="btn" id="readBtn" data-i18n="readDevice">↻ อ่านค่าจากบอร์ด</button><button class="btn primary" id="saveBtn" data-i18n="saveDevice">⬆ บันทึกลงบอร์ด</button></div>
+        <div class="row"><button class="btn" id="readBtn" data-i18n="readDevice">↻ อ่านค่าจากบอร์ด</button><button class="btn primary" id="saveBtn" data-i18n="saveDevice">⬆ บันทึกทั้งหมด</button></div>
+        <button class="btn" id="saveDrlDimBtn" data-i18n="saveDrlDim">⬆ บันทึกเฉพาะ DRL + DIM</button>
+        <p class="sub" data-i18n="saveDrlDimHint">คงค่า FADE และ Welcome ที่บอร์ดมีอยู่ไว้ ถ้าต้องการเฟดโรงงาน 1.3 วินาที ให้ตั้ง 1.3 แล้วกดบันทึกทั้งหมดก่อน</p>
         <p class="sub" id="saveStatus" data-i18n="saveWarning">บอร์ดต้องตอบกลับหรือทดสอบเปิดเครื่องใหม่ จึงจะยืนยันว่าบันทึกสำเร็จ</p>
       </div>
       <details class="panel diagnostics"><summary data-i18n="diagnostics">การเชื่อมต่อและบันทึกคำสั่ง</summary><div class="stack"><div class="row"><button class="btn" id="pingBtn">Ping</button><button class="btn" id="reqBtn" data-i18n="requestConfig">ขอค่าปัจจุบัน</button><button class="btn" id="copyLogBtn" data-i18n="copyLog">คัดลอกบันทึก</button></div><div id="log" class="log" aria-live="polite"></div><p class="help" data-i18n="browserHelp">ใช้เบราว์เซอร์ที่รองรับ Web Bluetooth ผ่าน HTTPS และตั้งค่าไฟขณะจอดรถเท่านั้น</p><button class="btn danger" id="resetBtn" data-i18n="factoryReset">คืนค่าโรงงาน</button></div></details>

@@ -43,8 +43,8 @@ const translations = {
     liveChangesHint:'เปิดแล้วเลือกโหมดหรือเลื่อนสไลเดอร์จะส่งไปบอร์ดทันที',
     lightingSettings:'ตั้งค่าไฟ', chooseSection:'ตามโหมดที่เลือกด้านบน',
     turn:'ไฟเลี้ยว', welcome:'Welcome', drlSettings:'ตั้งค่า DRL',
-    drlBrightness:'ความสว่าง DRL', fadeDuration:'ระยะเวลาเฟด DRL',
-    fadeExplanation:'บันทึกด้วย CFG,FADE (0.1–5 วินาที) ตาม APK ต้องทดสอบกับบอร์ดว่าเฟดมีผลช่วงไหน และค่ายังคงอยู่หลังเปิดเครื่องใหม่หรือไม่',
+    drlBrightness:'ความสว่าง DRL', fadeDuration:'เฟดกลับหลังปิดไฟเลี้ยว',
+    fadeExplanation:'หลังปิดไฟเลี้ยว DRL จะค่อย ๆ สว่างกลับ ค่าโรงงาน 1.3 วินาทีใช้ได้จริง กดบันทึกทั้งหมดเมื่อต้องการเปลี่ยนค่านี้',
     quickPresets:'ค่าความสว่างสำเร็จรูป', previewOnly:'พรีวิวเท่านั้น',
     night:'กลางคืน', daylight:'กลางวัน', balanced:'สมดุล', off:'ปิด',
     turnSettings:'ตั้งค่าไฟเลี้ยว', turnBrightness:'ความสว่างไฟเลี้ยว',
@@ -68,7 +68,8 @@ const translations = {
     resetCurve:'คืนค่ากราฟเริ่มต้น',
     customLimit:'กราฟ 5–20 วินาทีพรีวิวบนบอร์ดได้ขณะเชื่อมต่อ แต่ APK ที่ตรวจไม่ส่งคำสั่งบันทึกจุดกราฟหรือระยะเวลา จึงยังบันทึกให้เล่นเองตอนเปิดเครื่องจากเว็บนี้ไม่ได้ ต้องตรวจเฟิร์มแวร์หรือทดสอบบอร์ดว่ามีคำสั่งอื่นหรือไม่',
     previewWelcome:'▶ ทดลอง Welcome', readDevice:'↻ อ่านค่าจากบอร์ด',
-    saveDevice:'⬆ บันทึกลงบอร์ด',
+    saveDevice:'⬆ บันทึกทั้งหมด', saveDrlDim:'⬆ บันทึกเฉพาะ DRL + DIM',
+    saveDrlDimHint:'คงค่า FADE และ Welcome ที่บอร์ดมีอยู่ไว้ ถ้าต้องการเฟดโรงงาน 1.3 วินาที ให้ตั้ง 1.3 แล้วกดบันทึกทั้งหมดก่อน',
     saveWarning:'บอร์ดต้องตอบกลับหรือทดสอบเปิดเครื่องใหม่ จึงจะยืนยันว่าบันทึกสำเร็จ',
     diagnostics:'การเชื่อมต่อและบันทึกคำสั่ง', requestConfig:'ขอค่าปัจจุบัน',
     copyLog:'คัดลอกบันทึก', browserHelp:'ใช้เบราว์เซอร์ที่รองรับ Web Bluetooth ผ่าน HTTPS และตั้งค่าไฟขณะจอดรถเท่านั้น',
@@ -89,6 +90,11 @@ const translations = {
     dimReadbackMatch:value => `บอร์ดอ่านค่า DIM กลับได้ ${value}% ตรงกับที่ส่ง แต่ต้องลองปิดเปิดบอร์ดและทดสอบไฟเลี้ยวจริง`,
     dimReadbackMismatch:(wanted, got) => `ค่า DIM ไม่ตรง: ส่ง ${wanted}% แต่อ่านจากบอร์ดได้ ${got}% กรุณาคัดลอกบันทึกคำสั่ง`,
     dimReadbackMissing:'ยังไม่ได้ค่า DIM กลับจากบอร์ด จึงยืนยันการบันทึกไม่ได้ กรุณาคัดลอกบันทึกคำสั่ง',
+    readBeforePartial:'ต้องอ่านค่า FADE และ Welcome จากบอร์ดที่ต่ออยู่ก่อน กดบันทึกอีกครั้งหลังอ่านค่าได้',
+    fadeKept:value => ` ค่า FADE คงเดิม ${value} วินาที`,
+    fadeChanged:(wanted, got) => `ค่า FADE เปลี่ยนโดยไม่ตั้งใจ: เดิม ${wanted} ms อ่านได้ ${got} ms กรุณาคัดลอกบันทึกคำสั่ง`,
+    animChanged:(wanted, got) => `ค่า Welcome เปลี่ยนโดยไม่ตั้งใจ: เดิม ${wanted} อ่านได้ ${got} กรุณาคัดลอกบันทึกคำสั่ง`,
+    partialReadbackMissing:'ยังอ่านค่า FADE/Welcome กลับไม่ครบ จึงยืนยันว่าค่าเดิมคงอยู่ไม่ได้',
     resetConfirm:'คืนค่าโรงงาน? คำสั่ง RESET อาจลบค่า DRL และ DIM ที่บันทึกไว้ ห้ามกดระหว่างทดสอบว่าค่ายังคงอยู่หลังเปิดเครื่องใหม่',
     resetAgain:'ยืนยันว่าจะส่ง RESET ไปยังบอร์ดและยกเลิกการตั้งค่าที่บันทึกไว้',
     logCopied:'คัดลอกบันทึกแล้ว', copyFailed:'คัดลอกบันทึกไม่ได้',
@@ -139,8 +145,8 @@ const translations = {
     liveChangesHint:'When on, mode and slider changes are sent to the board',
     lightingSettings:'Lighting settings', chooseSection:'Follows the mode selected above',
     turn:'Turn signal', welcome:'Welcome', drlSettings:'DRL settings',
-    drlBrightness:'DRL brightness', fadeDuration:'DRL fade duration',
-    fadeExplanation:'Saved with CFG,FADE (0.1–5 s), as in the APK. Test the board to confirm when the fade applies and whether it persists after a power cycle.',
+    drlBrightness:'DRL brightness', fadeDuration:'Return fade after signal off',
+    fadeExplanation:'DRL gradually brightens after the turn signal switches off. The factory 1.3 s setting has worked on the vehicle. Use Save all to change it.',
     quickPresets:'Quick brightness presets', previewOnly:'Preview only',
     night:'Night', daylight:'Daylight', balanced:'Balanced', off:'Off',
     turnSettings:'Turn-signal settings', turnBrightness:'Turn brightness',
@@ -164,7 +170,8 @@ const translations = {
     resetCurve:'Reset curve',
     customLimit:'The 5–20 second curve can preview on a connected board. The inspected APK does not send a command to save its points or duration, so this site cannot yet store it for startup. Firmware inspection or a board test may reveal another command.',
     previewWelcome:'▶ Preview Welcome', readDevice:'↻ Read from device',
-    saveDevice:'⬆ Save to device',
+    saveDevice:'⬆ Save all settings', saveDrlDim:'⬆ Save DRL + DIM only',
+    saveDrlDimHint:'Keeps the board’s current FADE and Welcome values. To restore the factory 1.3 s fade, set 1.3 s and Save all first.',
     saveWarning:'A board response or power-cycle test is needed to confirm the settings were saved.',
     diagnostics:'Connection and command log', requestConfig:'Request config',
     copyLog:'Copy log', browserHelp:'Use a Web Bluetooth browser over HTTPS. Configure the lights only while parked.',
@@ -185,6 +192,11 @@ const translations = {
     dimReadbackMatch:value => `Board readback reports DIM ${value}%, matching the request. Power-cycle the board and test the real turn signal.`,
     dimReadbackMismatch:(wanted, got) => `DIM mismatch: sent ${wanted}%, board reports ${got}%. Please copy the command log.`,
     dimReadbackMissing:'No DIM readback received, so saving is unverified. Please copy the command log.',
+    readBeforePartial:'Read FADE and Welcome from the connected board first, then press Save again.',
+    fadeKept:value => ` FADE stayed at ${value} s.`,
+    fadeChanged:(wanted, got) => `FADE changed unexpectedly: was ${wanted} ms, now ${got} ms. Please copy the command log.`,
+    animChanged:(wanted, got) => `Welcome changed unexpectedly: was ${wanted}, now ${got}. Please copy the command log.`,
+    partialReadbackMissing:'FADE/Welcome readback is incomplete, so preserving them is unverified.',
     resetConfirm:'Restore factory defaults? RESET may erase saved DRL and DIM values. Do not use it while testing persistence after a power cycle.',
     resetAgain:'Confirm sending RESET to the board and discarding saved settings.',
     logCopied:'Log copied', copyFailed:'Could not copy log',
@@ -315,6 +327,7 @@ function disconnected() {
     $('saveStatus').textContent = tr('dimReadbackMissing');
   }
   state.rxJsonBuffer = '';
+  state.config = null;
   stopActiveTool(false);
   stopWelcome();
   clearTimeout(state.previewTimer);
@@ -402,9 +415,19 @@ function checkDimReadback(raw) {
   state.pendingDimReadback = null;
   const reported = flat ? percentFromPwm(value) : Math.round(value);
   const matches = flat ? Math.abs(value - pending.expectedPwm) <= 1 : Math.abs(value - pending.expected) <= 1;
-  const message = matches
+  let message = matches
     ? tr('dimReadbackMatch')(reported)
     : tr('dimReadbackMismatch')(pending.expected, reported);
+  if (pending.preservedFade != null) {
+    if (config.fade == null || config.anim == null) message += ' ' + tr('partialReadbackMissing');
+    else {
+      const actualFade = Number(config.fade);
+      const actualAnim = Number(config.anim);
+      if (actualFade !== pending.preservedFade) message += ' ' + tr('fadeChanged')(pending.preservedFade, actualFade);
+      else message += tr('fadeKept')((actualFade / 1000).toFixed(1));
+      if (actualAnim !== pending.preservedAnim) message += ' ' + tr('animChanged')(pending.preservedAnim, actualAnim);
+    }
+  }
   $('saveStatus').textContent = message;
   log('DIM readback: requested ' + pending.expected + '% (PWM ' + pending.expectedPwm + '), board reported ' + reported + '%' + (flat ? ' (PWM ' + value + ')' : ''));
   toast(message);
@@ -1030,21 +1053,30 @@ $('readBtn').addEventListener('click', async () => {
 });
 $('reqBtn').addEventListener('click', () => send('REQ'));
 $('pingBtn').addEventListener('click', () => send('PING'));
-$('saveBtn').addEventListener('click', async () => {
+async function saveSettings(scope) {
   if (!state.connected) { toast(tr('connectFirst')); $('saveStatus').textContent = tr('connectFirst'); return; }
   await stopActiveTool();
-  if (!['fade-in','pulse','flash'].includes(state.welcome)) { toast(tr('graphCannotSave')); $('saveStatus').textContent = tr('graphCannotSave'); return; }
+  if (scope === 'all' && !['fade-in','pulse','flash'].includes(state.welcome)) { toast(tr('graphCannotSave')); $('saveStatus').textContent = tr('graphCannotSave'); return; }
+  const currentConfig = state.config?.config && typeof state.config.config === 'object' ? state.config.config : state.config;
+  const preservedFade = scope === 'drlDim' ? Number(currentConfig?.fade) : null;
+  const preservedAnim = scope === 'drlDim' ? Number(currentConfig?.anim) : null;
+  if (scope === 'drlDim' && (!Number.isInteger(preservedFade) || preservedFade < 100 || preservedFade > 5000 ||
+      !Number.isInteger(preservedAnim) || preservedAnim < 0 || preservedAnim > 2)) {
+    toast(tr('readBeforePartial'));
+    $('saveStatus').textContent = tr('readBeforePartial');
+    await send('REQ');
+    return;
+  }
   clearTimeout(state.previewTimer);
   stopWelcome();
   const animation = {'fade-in':0, pulse:1, flash:2}[state.welcome];
   const expected = Number($('opposite').value);
   const commands = [
     'CFG,DRL,' + pwm($('drl').value),
-    'CFG,DIM,' + pwm(expected),
-    'CFG,FADE,' + $('fadeDuration').value,
-    'CFG,ANIM,' + animation,
-    'SAVE'
+    'CFG,DIM,' + pwm(expected)
   ];
+  if (scope === 'all') commands.push('CFG,FADE,' + $('fadeDuration').value, 'CFG,ANIM,' + animation);
+  commands.push('SAVE');
   if (!confirm(tr('saveConfirm') + commands.join('\n') + tr('saveConfirmEnd'))) return;
   if (state.pendingDimReadback) clearTimeout(state.pendingDimReadback.timer);
   state.pendingDimReadback = null;
@@ -1058,13 +1090,15 @@ $('saveBtn').addEventListener('click', async () => {
     $('saveStatus').textContent = tr('dimReadbackMissing');
     toast(tr('dimReadbackMissing'));
   }, 5000);
-  state.pendingDimReadback = {expected, expectedPwm:pwm(expected), timer};
+  state.pendingDimReadback = {expected, expectedPwm:pwm(expected), preservedFade, preservedAnim, timer};
   if (!await send('REQ')) {
     clearTimeout(timer);
     state.pendingDimReadback = null;
     $('saveStatus').textContent = tr('dimReadbackMissing');
   }
-});
+}
+$('saveBtn').addEventListener('click', () => saveSettings('all'));
+$('saveDrlDimBtn').addEventListener('click', () => saveSettings('drlDim'));
 $('resetBtn').addEventListener('click', async () => {
   if (!state.connected) { toast(tr('connectFirst')); return; }
   if (!confirm(tr('resetConfirm')) || !confirm(tr('resetAgain'))) return;
